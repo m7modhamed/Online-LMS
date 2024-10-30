@@ -6,6 +6,7 @@ import com.lms.onlinelms.coursemanagement.dto.LessonResponseDto;
 import com.lms.onlinelms.coursemanagement.mapper.LessonMapper;
 import com.lms.onlinelms.coursemanagement.model.Lesson;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ILessonService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ public class LessonController {
 
     @PostMapping("sections/{sectionId}/lessons")
     public ResponseEntity<LessonResponseDto> addLesson(@PathVariable int sectionId
-            , @RequestBody LessonRequestDto lessonRequestDto) {
+            , @RequestBody @Valid LessonRequestDto lessonRequestDto) {
 
         Lesson lesson = lessonMapper.toLesson(lessonRequestDto);
 

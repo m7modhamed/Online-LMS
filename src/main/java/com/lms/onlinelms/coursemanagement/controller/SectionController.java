@@ -5,6 +5,7 @@ import com.lms.onlinelms.coursemanagement.dto.SectionResponseDto;
 import com.lms.onlinelms.coursemanagement.mapper.SectionMapper;
 import com.lms.onlinelms.coursemanagement.model.Section;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ISectionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +18,9 @@ public class SectionController {
     private final SectionMapper sectionMapper;
 
     @PostMapping("/courses/{course_id}/sections")
-    public ResponseEntity<SectionResponseDto> createCourseSection(
+    public ResponseEntity<SectionResponseDto> createSection(
             @PathVariable("course_id") Long course_id
-            , @RequestBody SectionRequestDto sectionRequestDto){
+            , @RequestBody @Valid SectionRequestDto sectionRequestDto){
 
         Section section = sectionMapper.toSection(sectionRequestDto);
 

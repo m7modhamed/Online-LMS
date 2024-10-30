@@ -10,7 +10,6 @@ import lombok.*;
 @Setter
 @Getter
 @EqualsAndHashCode
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Image {
@@ -18,10 +17,7 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
-
     private String name;
-
     private String type;
-
     private String imageUrl;
 }

@@ -11,9 +11,9 @@ public class LessonResponseDto {
 
     private short position;
 
-    private List<ContentResourceDto> contentResource;
+    private List<fileResourceDto> fileResource;
 
-    private VideoContentDto videoContent;
+    private VideoDto video;
 }
 
 

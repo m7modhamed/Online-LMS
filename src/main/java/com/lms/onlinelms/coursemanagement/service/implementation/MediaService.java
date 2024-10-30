@@ -27,7 +27,7 @@ public class MediaService implements IMediaService {
     private final ILessonService iLessonService;
     private final VideoRepository videoRepository;
     private final ICourseService courseService;
-    private static final String UPLOAD_DIR = "D:/My Projects/Java Projects/Online LMS/uploaded_files";
+    private static final String UPLOAD_DIR = "D:/uploaded_files";
     private final FileResourceRepository fileResourceRepository;
 
 

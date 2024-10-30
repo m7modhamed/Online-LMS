@@ -2,6 +2,7 @@ package com.lms.onlinelms.coursemanagement.controller;
 
 import com.lms.onlinelms.coursemanagement.model.Content;
 import com.lms.onlinelms.coursemanagement.service.interfaces.IMediaService;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,6 +1,7 @@
 package com.lms.onlinelms.coursemanagement.service.implementation;
 
 import com.lms.onlinelms.common.exceptions.AppException;
+import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.common.utility.UserUtil;
 import com.lms.onlinelms.coursemanagement.dto.CourseRequestDto;
 import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
@@ -8,6 +9,7 @@ import com.lms.onlinelms.coursemanagement.exception.CourseAccessException;
 import com.lms.onlinelms.coursemanagement.mapper.CourseMapper;
 import com.lms.onlinelms.coursemanagement.model.Category;
 import com.lms.onlinelms.coursemanagement.model.Course;
+import com.lms.onlinelms.coursemanagement.model.Lesson;
 import com.lms.onlinelms.coursemanagement.model.Section;
 import com.lms.onlinelms.coursemanagement.repository.CourseRepository;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICategoryService;
@@ -44,7 +46,7 @@ public class CourseService implements ICourseService {
 
         course.setStatus(CourseStatus.DRAFT);
 
-        Category category = categoryService.findById(courseRequestDto.getCategoryDto().getId());
+        Category category = categoryService.findById(courseRequestDto.getCategory().getId());
         course.setCategory(category);
         course.setInstructor(instructor);
         return courseRepository.save(course);
@@ -66,6 +68,7 @@ public class CourseService implements ICourseService {
 
     @Override
     public List<Course> getAllPublishedCourses() {
+
         return courseRepository.findAllByStatus(CourseStatus.PUBLISHED);
     }
 
@@ -99,32 +102,54 @@ public class CourseService implements ICourseService {
     @Override
     public Course getCourseForInstructor(Instructor instructor,long courseId) {
         return courseRepository
-                .findByInstructorAndId(instructor,courseId).orElseThrow(
-                        () -> new AppException("The course not found.", HttpStatus.NOT_FOUND)
+                .findByInstructorAndId(instructor, courseId).orElseThrow(
+                        () -> new ResourceNotFoundException("Course with ID " + courseId + " not found for the given instructor.", HttpStatus.NOT_FOUND)
                 );
     }
 
     @Override
     public List<Course> getCoursesForReviewing() {
+
         return courseRepository.findAllByStatus(CourseStatus.IN_REVIEW);
     }
 
+
+    @Override
+    public Course getCourseForReviewing(Long courseId) {
+        return courseRepository.findByStatusAndId(CourseStatus.IN_REVIEW,courseId);
+    }
     private void checkStableCourseForPublishing(Course course) {
+
+        if(course.getStatus() != CourseStatus.DRAFT) {
+            throw new AppException("The course is not currently in the draft stage.", HttpStatus.BAD_REQUEST);
+        }
+
         if(course.getSections().isEmpty()){
             throw new AppException("you have to add at least one section before publish it.",HttpStatus.BAD_REQUEST);
         }
 
-        for(Section section: course.getSections()){
-            if(section.getLessons().isEmpty()){
+        List<Section> sections = course.getSections();
+        sections.forEach((s)->{
+            if(s.getLessons().isEmpty()){
                 throw new AppException("you have to add at least one lesson in each section before publish it.",HttpStatus.BAD_REQUEST);
             }
-        }
+
+            List<Lesson> lessons =s.getLessons();
+            lessons.forEach((l)->{
+                if(l.getVideo() == null && l.getFileResource().isEmpty()){
+                    throw new AppException("you have to add at least one content in each lesson before publish it.",HttpStatus.BAD_REQUEST);
+                }
+            });
+
+        });
+
     }
 
-    public Course findCourseById(long courseId){
-        return  courseRepository.findById(courseId)
-                .orElseThrow(() -> new AppException("Course not found", HttpStatus.NOT_FOUND));
+    public Course findCourseById(long courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course with ID " + courseId + " not found", HttpStatus.NOT_FOUND));
     }
+
 
     public void checkInstructorIsOwner(Course course) {
         //check ,the user must be the owner of this course
@@ -171,19 +196,19 @@ public class CourseService implements ICourseService {
 
         checkInstructorIsOwner(course);
 
-        if(course.getStatus() == CourseStatus.PUBLISHED){
-            throw new AppException("The course is currently in the published stage. You can only archive it.", HttpStatus.BAD_REQUEST);
+        if(!course.getEnrolledStudents().isEmpty()){
+            throw new AppException("Cannot delete the course with ID " + courseId + " because it has enrolled students. You can only archive it.", HttpStatus.BAD_REQUEST);
         }
 
-        if(course.getStatus() == CourseStatus.DRAFT || course.getStatus() == CourseStatus.IN_REVIEW){
-            course.setStatus(CourseStatus.DELETED);
-            courseRepository.save(course);
-        }else {
-            throw new AppException("The course can only be deleted if it is in draft or in-review status.", HttpStatus.BAD_REQUEST);
-
+        if (course.getStatus() == CourseStatus.DELETED) {
+            throw new AppException("Cannot proceed because the course already has been marked as deleted.", HttpStatus.BAD_REQUEST);
         }
 
+        course.setStatus(CourseStatus.DELETED);
+        courseRepository.save(course);
     }
+
+
 
     // check user id is same with user that logged by token
     private void checkIfUserIdCorrect(User user , Long userId){

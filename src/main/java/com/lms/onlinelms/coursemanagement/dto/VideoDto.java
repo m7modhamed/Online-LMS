@@ -3,12 +3,11 @@ package com.lms.onlinelms.coursemanagement.dto;
 import lombok.Data;
 
 @Data
-public class ContentResourceDto {
+public class VideoDto {
 
     private Long id;
 
-    private String fileUrl;
+    private String videoUrl;
 
-    private String fileType;
-
+    private double durationInSecond;
 }

@@ -3,7 +3,6 @@ package com.lms.onlinelms.coursemanagement.service.interfaces;
 import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.coursemanagement.dto.CourseRequestDto;
 import com.lms.onlinelms.coursemanagement.model.Course;
-import com.lms.onlinelms.coursemanagement.model.Section;
 import com.lms.onlinelms.usermanagement.model.Instructor;
 import java.util.List;
 
@@ -37,4 +36,6 @@ public interface ICourseService {
     void enrollStudentIntoCourse(Long studentId, Long courseId);
 
     void deleteCourse(Long courseId);
+
+    Course getCourseForReviewing(Long courseId);
 }

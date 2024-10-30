@@ -7,7 +7,11 @@ import com.lms.onlinelms.usermanagement.dto.StudentSignupDto;
 import com.lms.onlinelms.usermanagement.model.User;
 import com.lms.onlinelms.usermanagement.security.UserAuthenticationProvider;
 import com.lms.onlinelms.usermanagement.service.interfaces.IAuthService;
+import com.lms.onlinelms.usermanagement.validation.customAnnotations.Password;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         User user = authService.login(loginRequestDto);
 
         LoginResponseDto loginResponseDto =new LoginResponseDto();
@@ -42,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/student")
-    public ResponseEntity<String> signupStudent(@RequestBody StudentSignupDto studentSignupDto, HttpServletRequest request) {
+    public ResponseEntity<String> signupStudent(@RequestBody @Valid StudentSignupDto studentSignupDto, HttpServletRequest request) {
         User user = authService.signupStudent(studentSignupDto,request);
 
         return ResponseEntity.created(URI.create("/users/" + user.getId())).body("User registered successfully. Please check your email to verify your account.");
@@ -50,7 +54,7 @@ public class AuthController {
 
 
     @PostMapping("/register/instructor")
-    public ResponseEntity<String> signupStudent(@RequestBody InstructorSignupDto instructorSignupDto, HttpServletRequest request) {
+    public ResponseEntity<String> signupInstructor(@RequestBody @Valid InstructorSignupDto instructorSignupDto, HttpServletRequest request) {
         User user = authService.signupInstructor(instructorSignupDto,request);
 
         return ResponseEntity.created(URI.create("/users/" + user.getId())).body("User registered successfully. Please check your email to verify your account.");
@@ -62,7 +66,10 @@ public class AuthController {
     }
 
     @GetMapping("/forgot-password-request")
-    public ResponseEntity<String> resetPasswordRequest(@RequestParam String email, HttpServletRequest request) {
+    public ResponseEntity<String> resetPasswordRequest(
+            @RequestParam @NotBlank @Email String email
+            , HttpServletRequest request) {
+
         User user = authService.findByEmail(email);
         authService.resetPasswordRequest(user, request.getHeader("Origin"));
 
@@ -71,7 +78,7 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String password) {
+    public ResponseEntity<String> resetPassword(@RequestParam @NotBlank String token, @RequestParam @NotBlank @Password String password) {
         String resetResult = authService.resetPassword(token, password);
         HttpStatus status = resetResult.equals("Password reset successfully") ? HttpStatus.ACCEPTED : HttpStatus.NOT_FOUND;
         return ResponseEntity.status(status).body(resetResult);

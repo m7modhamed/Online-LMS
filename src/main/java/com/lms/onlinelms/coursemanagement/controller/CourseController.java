@@ -90,6 +90,7 @@ public class CourseController {
         if(instructorId != instructor.getId()){
             throw new AppException("the instructor id is not correct ,please try again.", HttpStatus.BAD_REQUEST);
         }
+
         Course course= courseService.getCourseForInstructor(instructor,courseId);
 
         CourseResponseDto courseResponseDto =
@@ -101,7 +102,6 @@ public class CourseController {
     @GetMapping("/review/courses")
     public ResponseEntity<List<CourseInfoDto>> getCoursesForReviewing() {
 
-        //Admin admin =(Admin) UserUtil.getCurrentUser();
 
         List<Course> courses= courseService.getCoursesForReviewing();
 
@@ -110,6 +110,16 @@ public class CourseController {
         return ResponseEntity.ok(courseInfoDto);
     }
 
+    @GetMapping("/review/courses/{courseId}")
+    public ResponseEntity<CourseResponseDto> getCourseForReviewing(
+            @PathVariable Long courseId) {
+
+        Course course= courseService.getCourseForReviewing(courseId);
+
+        CourseResponseDto courseResponseDto = courseMapper.toCourseResponseDto(course);
+
+        return ResponseEntity.ok(courseResponseDto);
+    }
 
     @GetMapping("courses/{courseId}/archive")
     public ResponseEntity<String> archiveCourse(@PathVariable Long courseId){

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
-    @Query("SELECT c FROM Course c JOIN c.enrolledStudents s WHERE c.id = :courseId AND s.id = :studentId AND c.status = 2 ")
+    @Query("SELECT c FROM Course c JOIN c.enrolledStudents s WHERE c.id = :courseId AND s.id = :studentId AND  (c.status = 2 OR c.status = 3)")
     Course findPublishedCourseByIdAndStudentId(@Param("courseId") Long courseId, @Param("studentId") Long studentId);
 
     List<Course> findAllByStatus(CourseStatus status);

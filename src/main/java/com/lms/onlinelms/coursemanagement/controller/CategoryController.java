@@ -4,6 +4,7 @@ import com.lms.onlinelms.coursemanagement.dto.CategoryDto;
 import com.lms.onlinelms.coursemanagement.mapper.CategoryMapper;
 import com.lms.onlinelms.coursemanagement.model.Category;
 import com.lms.onlinelms.coursemanagement.service.implementation.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class CategoryController {
     private final CategoryMapper categoryMapper;
 
     @PostMapping("/categories")
-    public ResponseEntity<Category> createCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<Category> createCategory(@RequestBody @Valid CategoryDto categoryDto) {
         Category category=categoryMapper.toCategory(categoryDto);
 
         Category savedCategory = categoryService.save(category);

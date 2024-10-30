@@ -15,7 +15,7 @@ public class FileResource extends Content{
 
     private String fileType;
 
-    @ManyToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     @JsonBackReference
     private Lesson lesson;
 
