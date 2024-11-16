@@ -70,12 +70,14 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
                                      JavaMailSender mailSender,
                                      User user)
             throws MessagingException, UnsupportedEncodingException {
+
         MimeMessage message = mailSender.createMimeMessage();
         var messageHelper = new MimeMessageHelper(message);
         messageHelper.setFrom("m7modm42@gmail.com", senderName);
         messageHelper.setTo(user.getEmail());
         messageHelper.setSubject(subject);
         messageHelper.setText(mailContent, true);
+
         mailSender.send(message);
     }
 

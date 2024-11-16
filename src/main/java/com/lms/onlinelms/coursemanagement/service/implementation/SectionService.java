@@ -1,6 +1,7 @@
 package com.lms.onlinelms.coursemanagement.service.implementation;
 
 import com.lms.onlinelms.common.exceptions.AppException;
+import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.coursemanagement.model.Section;
 import com.lms.onlinelms.coursemanagement.repository.SectionRepository;
@@ -33,7 +34,7 @@ public class SectionService implements ISectionService {
     @Override
     public Section findSectionById(int sectionId) {
         return sectionRepository.findById(sectionId).orElseThrow(
-                ()-> new AppException("section not found", HttpStatus.NOT_FOUND)
+                ()-> new ResourceNotFoundException("section not found", HttpStatus.NOT_FOUND)
         );
     }
 

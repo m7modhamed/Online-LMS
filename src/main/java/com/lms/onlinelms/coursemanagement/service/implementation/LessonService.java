@@ -1,6 +1,7 @@
 package com.lms.onlinelms.coursemanagement.service.implementation;
 
 import com.lms.onlinelms.common.exceptions.AppException;
+import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.coursemanagement.model.Lesson;
 import com.lms.onlinelms.coursemanagement.model.Section;
@@ -26,7 +27,7 @@ public class LessonService implements ILessonService {
     public Lesson findLessonById(Long id) {
         return lessonRepository.findById(id)
                 .orElseThrow(() ->
-                        new AppException("Lesson not found with ID: " + id, HttpStatus.NOT_FOUND));
+                        new ResourceNotFoundException("Lesson not found with ID: " + id, HttpStatus.NOT_FOUND));
     }
 
     @Override

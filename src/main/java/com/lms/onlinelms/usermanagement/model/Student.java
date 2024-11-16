@@ -3,7 +3,6 @@ package com.lms.onlinelms.usermanagement.model;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)

@@ -1,6 +1,7 @@
 package com.lms.onlinelms.usermanagement.service.implementation;
 
 import com.lms.onlinelms.common.exceptions.AppException;
+import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.usermanagement.model.User;
 import com.lms.onlinelms.usermanagement.model.Token;
 import com.lms.onlinelms.usermanagement.repository.VerificationTokenRepository;
@@ -9,9 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Calendar;
-import java.util.Optional;
 
 /**
  * @author Sampson Alfred
@@ -24,20 +23,24 @@ public class TokenService implements ITokenService {
 
 
     public Token validateToken(String theToken) {
-        Optional<Token> token = tokenRepository.findByToken(theToken);
-        if (token.isEmpty()) {
-            throw new AppException( "The token could not be found." ,HttpStatus.NOT_FOUND);
-        }
+       Token token = getTokenById(theToken);
 
-        if (token.get().isUsed()) {
+
+        if (token.isUsed()) {
             throw new AppException( "This token has already been used." ,HttpStatus.BAD_REQUEST);
         }
 
         Calendar calendar = Calendar.getInstance();
-        if ((token.get().getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
+        if ((token.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
             throw new AppException( "This token expired." ,HttpStatus.BAD_REQUEST);
         }
-        return token.get();
+        return token;
+    }
+
+    private Token getTokenById(String theToken) {
+        return tokenRepository.findByToken(theToken).orElseThrow(
+                () -> new ResourceNotFoundException( "The token could not be found." ,HttpStatus.NOT_FOUND)
+        );
     }
 
     @Override

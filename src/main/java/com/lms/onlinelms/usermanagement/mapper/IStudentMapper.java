@@ -27,6 +27,6 @@ public interface IStudentMapper {
         student.setIsActive(false);
         student.setIsBlocked(false);
         return student;
-    };
+    }
 
 }

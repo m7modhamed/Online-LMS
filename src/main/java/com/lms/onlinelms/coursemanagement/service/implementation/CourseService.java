@@ -6,6 +6,8 @@ import com.lms.onlinelms.common.utility.UserUtil;
 import com.lms.onlinelms.coursemanagement.dto.CourseRequestDto;
 import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
 import com.lms.onlinelms.coursemanagement.exception.CourseAccessException;
+import com.lms.onlinelms.coursemanagement.exception.IncompleteCourseException;
+import com.lms.onlinelms.coursemanagement.exception.UnsuitableCourseStatusException;
 import com.lms.onlinelms.coursemanagement.mapper.CourseMapper;
 import com.lms.onlinelms.coursemanagement.model.Category;
 import com.lms.onlinelms.coursemanagement.model.Course;
@@ -52,7 +54,6 @@ public class CourseService implements ICourseService {
         return courseRepository.save(course);
     }
 
-
     @Override
     public Course publishRequest(Long courseId) {
         Course course = findCourseById(courseId);
@@ -79,7 +80,6 @@ public class CourseService implements ICourseService {
         // check user id is same with user that logged by token
         checkIfUserIdCorrect(student , studentId);
 
-
         return courseRepository.findPublishedCourseByIdAndStudentId(courseId, studentId);
     }
 
@@ -87,7 +87,7 @@ public class CourseService implements ICourseService {
     public Course publishCourse(Long courseId) {
         Course course = findCourseById(courseId);
         if(course.getStatus() != CourseStatus.IN_REVIEW) {
-            throw new AppException("The course is not currently in the review stage.", HttpStatus.BAD_REQUEST);
+            throw new UnsuitableCourseStatusException("The course is not currently in the review stage.", HttpStatus.BAD_REQUEST);
         }
         course.setStatus(CourseStatus.PUBLISHED);
         return courseRepository.save(course);
@@ -121,23 +121,24 @@ public class CourseService implements ICourseService {
     private void checkStableCourseForPublishing(Course course) {
 
         if(course.getStatus() != CourseStatus.DRAFT) {
-            throw new AppException("The course is not currently in the draft stage.", HttpStatus.BAD_REQUEST);
+            throw new UnsuitableCourseStatusException("The course is not currently in the draft stage.", HttpStatus.BAD_REQUEST);
         }
 
+        //replace with IncompleteCourseException
         if(course.getSections().isEmpty()){
-            throw new AppException("you have to add at least one section before publish it.",HttpStatus.BAD_REQUEST);
+            throw new IncompleteCourseException("you have to add at least one section before publish it.",HttpStatus.BAD_REQUEST);
         }
 
         List<Section> sections = course.getSections();
         sections.forEach((s)->{
             if(s.getLessons().isEmpty()){
-                throw new AppException("you have to add at least one lesson in each section before publish it.",HttpStatus.BAD_REQUEST);
+                throw new IncompleteCourseException("you have to add at least one lesson in each section before publish it.",HttpStatus.BAD_REQUEST);
             }
 
             List<Lesson> lessons =s.getLessons();
             lessons.forEach((l)->{
                 if(l.getVideo() == null && l.getFileResource().isEmpty()){
-                    throw new AppException("you have to add at least one content in each lesson before publish it.",HttpStatus.BAD_REQUEST);
+                    throw new IncompleteCourseException("you have to add at least one content in each lesson before publish it.",HttpStatus.BAD_REQUEST);
                 }
             });
 
@@ -166,7 +167,7 @@ public class CourseService implements ICourseService {
 
         checkInstructorIsOwner(course);
         if(course.getStatus() != CourseStatus.PUBLISHED){
-            throw new AppException("The course is not currently in the publish stage.", HttpStatus.BAD_REQUEST);
+            throw new UnsuitableCourseStatusException("The course is not currently in the publish stage.", HttpStatus.BAD_REQUEST);
         }
         course.setStatus(CourseStatus.ARCHIVED);
 
@@ -183,7 +184,7 @@ public class CourseService implements ICourseService {
         Course course = findCourseById(courseId);
 
         if(course.getStatus() != CourseStatus.PUBLISHED){
-            throw new AppException("The course is not currently in the publish stage.", HttpStatus.BAD_REQUEST);
+            throw new UnsuitableCourseStatusException("The course is not currently in the publish stage.", HttpStatus.BAD_REQUEST);
         }
         student.getCourses().add(course);
 
@@ -201,7 +202,7 @@ public class CourseService implements ICourseService {
         }
 
         if (course.getStatus() == CourseStatus.DELETED) {
-            throw new AppException("Cannot proceed because the course already has been marked as deleted.", HttpStatus.BAD_REQUEST);
+            throw new UnsuitableCourseStatusException("Cannot proceed because the course already has been marked as deleted.", HttpStatus.BAD_REQUEST);
         }
 
         course.setStatus(CourseStatus.DELETED);

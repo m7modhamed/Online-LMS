@@ -1,6 +1,7 @@
 package com.lms.onlinelms.coursemanagement.service.implementation;
 
 import com.lms.onlinelms.common.exceptions.AppException;
+import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.coursemanagement.model.Category;
 import com.lms.onlinelms.coursemanagement.repository.CategoryRepository;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICategoryService;
@@ -20,7 +21,7 @@ private final CategoryRepository categoryRepository;
     public Category findById(Long id) {
 
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new AppException("Category not found with ID: " + id, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id, HttpStatus.NOT_FOUND));
     }
 
     @Override

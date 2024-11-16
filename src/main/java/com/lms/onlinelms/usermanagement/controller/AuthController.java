@@ -60,6 +60,7 @@ public class AuthController {
         return ResponseEntity.created(URI.create("/users/" + user.getId())).body("User registered successfully. Please check your email to verify your account.");
     }
 
+
     @GetMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
         return authService.activateUser(token);

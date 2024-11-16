@@ -1,9 +1,7 @@
 package com.lms.onlinelms.usermanagement.mapper;
 
 import com.lms.onlinelms.usermanagement.dto.InstructorSignupDto;
-import com.lms.onlinelms.usermanagement.dto.StudentSignupDto;
 import com.lms.onlinelms.usermanagement.model.Instructor;
-import com.lms.onlinelms.usermanagement.model.Student;
 import org.mapstruct.Mapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,5 +33,5 @@ public interface IInstructorMapper {
         instructor.setIsActive(false);
         instructor.setIsBlocked(false);
         return instructor;
-    };
+    }
 }

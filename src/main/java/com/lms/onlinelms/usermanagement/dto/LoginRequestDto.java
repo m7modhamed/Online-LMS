@@ -1,6 +1,5 @@
 package com.lms.onlinelms.usermanagement.dto;
 
-import com.lms.onlinelms.usermanagement.validation.customAnnotations.Password;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;

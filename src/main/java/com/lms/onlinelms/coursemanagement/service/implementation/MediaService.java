@@ -95,7 +95,7 @@ public class MediaService implements IMediaService {
             file.transferTo(targetFile);
             return targetFile.getAbsolutePath();  // Return the  file
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save file: " + e.getMessage(), e);
+            throw new AppException("Failed to save file: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -106,10 +106,10 @@ public class MediaService implements IMediaService {
             avutil.av_log_set_level(avutil.AV_LOG_QUIET);
             AVFormatContext formatContext = avformat.avformat_alloc_context();
             if (avformat.avformat_open_input(formatContext, filePath, null, null) != 0) {
-                throw new RuntimeException("Could not open video file");
+                throw new AppException("Could not open video file", HttpStatus.BAD_REQUEST);
             }
             if (avformat.avformat_find_stream_info(formatContext, (AVDictionary) null) < 0) {
-                throw new RuntimeException("Could not retrieve video stream info");
+                throw new AppException("Could not retrieve video stream info" , HttpStatus.BAD_REQUEST);
             }
 
 

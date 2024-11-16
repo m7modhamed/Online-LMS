@@ -1,6 +1,7 @@
 package com.lms.onlinelms.usermanagement.service.implementation;
 
 import com.lms.onlinelms.common.exceptions.AppException;
+import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.usermanagement.dto.InstructorSignupDto;
 import com.lms.onlinelms.usermanagement.dto.LoginRequestDto;
 import com.lms.onlinelms.usermanagement.dto.StudentSignupDto;
@@ -55,7 +56,7 @@ public class AuthService implements IAuthService {
         if(studentRole.isPresent()) {
             student.setRole(studentRole.get());
         }else{
-            throw new AppException("the role not found",HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException("the role not found",HttpStatus.NOT_FOUND);
         }
         Student savedStudent=studentRepository.save(student);
         publisher.publishEvent(new RegistrationCompleteEvent(savedStudent, request.getHeader("Origin")));
@@ -72,7 +73,7 @@ public class AuthService implements IAuthService {
         if(instructorRole.isPresent()) {
             instructor.setRole(instructorRole.get());
         }else {
-            throw new AppException("the role not found",HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException("the role not found",HttpStatus.NOT_FOUND);
         }
         Instructor savedInstructor = instructorRepository.save(instructor);
         publisher.publishEvent(new RegistrationCompleteEvent(savedInstructor, request.getHeader("Origin")));
@@ -148,8 +149,9 @@ public class AuthService implements IAuthService {
         return "Password reset successfully";
     }
 
+    @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found.", HttpStatus.NOT_FOUND));
     }
 }
