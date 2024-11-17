@@ -40,7 +40,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(value = { InsufficientAuthenticationException.class })
     public ResponseEntity<LoginResponseDto> handleAuthenticationException(Exception ex) {
 
-        LoginResponseDto loginResponseDto =new LoginResponseDto();
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
 
         loginResponseDto.setStatus("error");
         loginResponseDto.setMessage(ex.getMessage());

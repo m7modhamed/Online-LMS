@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class StudentSignupDto {
 
-    @Size(min = 1, max = 15)
+    @Size(min = 3, max = 15)
     @NotBlank
     private String firstName;
-    @Size(min = 1, max = 15)
+    @Size(min = 3, max = 15)
     @NotBlank
     private String lastName;
     @Email
@@ -29,6 +29,6 @@ public class StudentSignupDto {
 
     private Image profileImage;
 
-    @Size(min = 1, max = 15)
+    @Size(min = 3, max = 15)
     private String phoneNumber;
 }
