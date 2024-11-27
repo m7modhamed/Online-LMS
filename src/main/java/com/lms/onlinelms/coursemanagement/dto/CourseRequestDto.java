@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 public class CourseRequestDto {
 
-
     @NotBlank
     @Size(min = 5, max = 50)
     private String name;
@@ -16,7 +15,6 @@ public class CourseRequestDto {
     @NotBlank
     @Size(min = 60 , max = 600)
     private String description;
-
 
     @NotBlank
     @Size(min = 1 , max = 10)

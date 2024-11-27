@@ -4,20 +4,20 @@ import com.lms.onlinelms.coursemanagement.dto.CategoryDto;
 import com.lms.onlinelms.coursemanagement.mapper.CategoryMapper;
 import com.lms.onlinelms.coursemanagement.model.Category;
 import com.lms.onlinelms.coursemanagement.service.implementation.CategoryService;
+import com.lms.onlinelms.coursemanagement.service.interfaces.ICategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping
 @RestController
 public class CategoryController {
 
-    private final CategoryService categoryService;
+    private final ICategoryService categoryService;
     private final CategoryMapper categoryMapper;
 
     @PostMapping("/categories")
@@ -27,6 +27,14 @@ public class CategoryController {
         Category savedCategory = categoryService.save(category);
 
         return ResponseEntity.ok().body(categoryMapper.toCategoryDto(savedCategory));
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategoryDto>> getCategories() {
+
+        List<Category> categories = categoryService.getCategories();
+
+        return ResponseEntity.ok().body(categoryMapper.categoryListToCategoryDtoList(categories));
     }
 
 }

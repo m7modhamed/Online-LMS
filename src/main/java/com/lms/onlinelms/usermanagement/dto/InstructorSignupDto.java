@@ -39,9 +39,11 @@ public class InstructorSignupDto {
     private String phoneNumber;
 
     @NotBlank
+    @Size(min = 3, max = 25)
     private String specialization;
 
     @NotBlank
+    @Size(min = 25, max = 500)
     private String aboutMe;
 
     @URL(host = "www.linkedin.com")

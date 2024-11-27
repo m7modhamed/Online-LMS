@@ -78,7 +78,7 @@ public class AuthController {
         return ResponseEntity.ok("Password reset email sent successfully");
     }
 
-    @PostMapping("/reset-password")
+    @PostMapping("/resetPassword")
     public ResponseEntity<String> resetPassword(@RequestParam @NotBlank String token, @RequestParam @NotBlank @Password String password) {
         String resetResult = authService.resetPassword(token, password);
         HttpStatus status = resetResult.equals("Password reset successfully") ? HttpStatus.ACCEPTED : HttpStatus.NOT_FOUND;

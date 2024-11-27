@@ -43,10 +43,10 @@ public class SecurityConfig {
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST, "/login", "/register/**" ,"/verifyEmail/**","/reset-password/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/register/**" ,"/verifyEmail/**","/resetPassword/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/verifyEmail/**" , "/forgot-password-request/**" , "/courses").permitAll()
                         .requestMatchers(HttpMethod.POST,"/courses" , "/courses/*/sections" , "/lessons/*/media" , "sections/*/lessons").hasRole("INSTRUCTOR")
-                        .requestMatchers(HttpMethod.GET,"/courses/*/publishRequest" , "/instructor/*/courses","/instructor/*/courses/*" , "/courses/*/archive").hasRole("INSTRUCTOR")
+                        .requestMatchers(HttpMethod.GET, "/categories","/courses/*/publishRequest" , "/instructor/*/courses","/instructor/*/courses/*" , "/courses/*/archive").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.DELETE , "/courses/*").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.POST,"/categories").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "courses/*/publish" , "/review/courses/**").hasRole("ADMIN")
