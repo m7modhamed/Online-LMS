@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface SectionMapper {
 
-
+List<SectionResponseDto> toSectionResponseDto(List<Section> sections);
     Section toSection(SectionRequestDto sectionRequestDto);
 
 

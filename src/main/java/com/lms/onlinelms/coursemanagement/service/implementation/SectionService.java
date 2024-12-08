@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -36,6 +38,11 @@ public class SectionService implements ISectionService {
         return sectionRepository.findById(sectionId).orElseThrow(
                 ()-> new ResourceNotFoundException("section not found", HttpStatus.NOT_FOUND)
         );
+    }
+
+    @Override
+    public List<Section> getCourseSections(Long courseId) {
+        return sectionRepository.findAllByCourse_Id(courseId);
     }
 
 }

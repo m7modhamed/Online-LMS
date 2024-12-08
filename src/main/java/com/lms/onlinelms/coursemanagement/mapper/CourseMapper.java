@@ -17,6 +17,7 @@ public interface CourseMapper {
 
     CourseResponseDto toCourseResponseDto(Course course);
 
+
     List<CourseInfoDto> toCourseInfoDto(List<Course> courses);
 
     List<CourseResponseDto> toCourseResponseDto(List<Course> course);

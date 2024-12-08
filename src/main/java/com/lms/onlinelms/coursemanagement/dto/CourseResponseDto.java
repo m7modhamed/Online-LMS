@@ -1,5 +1,6 @@
 package com.lms.onlinelms.coursemanagement.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lms.onlinelms.usermanagement.dto.InstructorDto;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -24,8 +25,10 @@ public class CourseResponseDto {
 
     private InstructorDto instructor;
 
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime createdAt;
 
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime lastUpdate;
 
 }

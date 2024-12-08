@@ -53,6 +53,7 @@ public class UserAuthenticationProvider {
                 .withSubject(user.getEmail())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
+                .withClaim("id" , user.getId())
                 .withClaim("firstName", user.getFirstName())
                 .withClaim("lastName", user.getLastName())
                 .withClaim("role" , user.getRole().getName())
