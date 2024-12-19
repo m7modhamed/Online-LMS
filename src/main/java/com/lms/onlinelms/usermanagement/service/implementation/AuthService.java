@@ -58,6 +58,7 @@ public class AuthService implements IAuthService {
         }else{
             throw new ResourceNotFoundException("the role not found",HttpStatus.NOT_FOUND);
         }
+
         Student savedStudent=studentRepository.save(student);
         publisher.publishEvent(new RegistrationCompleteEvent(savedStudent, request.getHeader("Origin")));
         return savedStudent;

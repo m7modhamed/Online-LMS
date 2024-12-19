@@ -7,6 +7,8 @@ import com.lms.onlinelms.coursemanagement.repository.VideoRepository;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICourseService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ILessonService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.IMediaService;
+import com.lms.onlinelms.usermanagement.repository.InstructorRepository;
+import com.lms.onlinelms.usermanagement.service.implementation.UserService;
 import lombok.RequiredArgsConstructor;
 import org.bytedeco.ffmpeg.avformat.AVFormatContext;
 import org.bytedeco.ffmpeg.avutil.AVDictionary;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -27,13 +31,56 @@ public class MediaService implements IMediaService {
     private final ILessonService iLessonService;
     private final VideoRepository videoRepository;
     private final ICourseService courseService;
-    private static final String UPLOAD_DIR = "D:/uploaded_files";
+    private static final String UPLOAD_DIR = "D:/My Projects/React Projects/OnlineLMS/public";
     private final FileResourceRepository fileResourceRepository;
+    private final UserService userService;
+    private final InstructorRepository instructorRepository;
+
+
 
 
     @Override
-    public Content uploadLessonMedia(Long lessonId , MultipartFile file) {
+    public Content uploadLessonVideo(Long lessonId , MultipartFile file) {
         Content content = null;
+
+        if (file.getContentType() != null && !file.getContentType().startsWith("video"))
+        {
+            throw new AppException("the file type must be video", HttpStatus.BAD_REQUEST);
+        }
+
+        // Find the lesson
+        Lesson lesson = iLessonService.findLessonById(lessonId);
+
+        //get course
+        Course course = lesson.getSection().getCourse();
+
+
+        //check for the use own this course or not
+        courseService.checkInstructorIsOwner(course);
+
+        if(lesson.getVideo() != null){
+            throw new AppException("the lesson already has a video ,you have to delete the old video", HttpStatus.BAD_REQUEST);
+        }
+
+        String fileUrl = saveFile(file , course);
+
+
+        Video video = new Video();
+        String[] urlParts = fileUrl.split("\\\\");
+        video.setUrl("\\"+ course.getId() + "\\" + urlParts[urlParts.length-1]);
+        video.setDurationInSecond(extractVideoDuration(fileUrl));
+
+
+        lesson.setVideo(video);
+        content = videoRepository.save(video);
+
+
+        return content;
+    }
+
+    @Override
+    public List<Content> uploadLessonFiles(Long lessonId, List<MultipartFile> files) {
+        List<Content> content = new ArrayList<>();
 
         // Find the lesson
         Lesson lesson = iLessonService.findLessonById(lessonId);
@@ -44,44 +91,28 @@ public class MediaService implements IMediaService {
         //check for the use own this course or not
         courseService.checkInstructorIsOwner(course);
 
+        for(MultipartFile file : files){
+            String fileType = file.getContentType();
+            String fileUrl = saveFile(file , course);
 
-        String fileType = file.getContentType();
-        String fileUrl = saveFile(file);
-
-        long oldVideoContentId=0;
-        if (fileType != null && fileType.startsWith("video")) {
-            Video video = new Video();
-            video.setUrl(fileUrl);
-            video.setDurationInSecond(extractVideoDuration(fileUrl));
-
-            if(lesson.getVideo() != null){
-                File existedVideo=new File(lesson.getVideo().getUrl());
-                boolean isDeleted = existedVideo.delete();
-                if(!isDeleted){
-                   throw new AppException("can not upload the video", HttpStatus.BAD_REQUEST);
-                }
-                oldVideoContentId = lesson.getVideo().getId();
-
-            }
-            lesson.setVideo(video);
-            content = videoRepository.save(video);
-            videoRepository.deleteById(oldVideoContentId);
-        } else if(fileType != null && !fileType.startsWith("video")){
             FileResource fileResource = new FileResource();
-            fileResource.setUrl(fileUrl);
-            fileResource.setFileType(fileType);
+            fileResource.setName(file.getOriginalFilename());
+            fileResource.setUrl(fileUrl.substring(fileUrl.lastIndexOf("public")+6));
+            fileResource.setType(fileType);
             fileResource.setLesson(lesson);
-            content = fileResourceRepository.save(fileResource);
-        }
 
-        //Lesson SavedLesson = lessonRepository.save(lesson);
+            FileResource savedFile = fileResourceRepository.save(fileResource);
+            content.add(savedFile);
+
+        }
 
         return content;
     }
 
-    private String saveFile(MultipartFile file) {
+
+    private String saveFile(MultipartFile file , Course course) {
         // Create the upload directory if it doesn't exist
-        File uploadDir = new File(UPLOAD_DIR);
+        File uploadDir = new File(UPLOAD_DIR +"/"+course.getId());
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();  // Create directories if needed
         }

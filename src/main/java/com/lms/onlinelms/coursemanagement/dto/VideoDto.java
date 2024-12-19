@@ -7,7 +7,7 @@ public class VideoDto {
 
     private Long id;
 
-    private String videoUrl;
+    private String url;
 
     private double durationInSecond;
 }

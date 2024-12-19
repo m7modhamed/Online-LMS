@@ -7,8 +7,10 @@ public class fileResourceDto {
 
     private Long id;
 
-    private String fileUrl;
+    private String name;
 
-    private String fileType;
+    private String url;
+
+    private String type;
 
 }

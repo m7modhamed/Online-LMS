@@ -11,9 +11,9 @@ import lombok.*;
 @AllArgsConstructor
 public class FileResource extends Content{
 
+    private String name;
 
-
-    private String fileType;
+    private String type;
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     @JsonBackReference

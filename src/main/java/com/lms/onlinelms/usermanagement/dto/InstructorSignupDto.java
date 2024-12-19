@@ -49,13 +49,14 @@ public class InstructorSignupDto {
     @URL(host = "www.linkedin.com")
     private String linkedinUrl;
 
-    @URL(host = "github.com")
+    @URL(host = "www.github.com")
     private String githubUrl;
 
-    @URL(host = "web.facebook.com")
+    @URL(host = "www.facebook.com")
     private String facebookUrl;
 
-    @URL(host = "x.com")
+    @URL(host = "www.x.com")
     private String twitterUrl;
+
 
 }
