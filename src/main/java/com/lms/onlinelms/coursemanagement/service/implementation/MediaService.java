@@ -3,12 +3,11 @@ package com.lms.onlinelms.coursemanagement.service.implementation;
 import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.coursemanagement.model.*;
 import com.lms.onlinelms.coursemanagement.repository.FileResourceRepository;
+import com.lms.onlinelms.coursemanagement.repository.LessonRepository;
 import com.lms.onlinelms.coursemanagement.repository.VideoRepository;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICourseService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ILessonService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.IMediaService;
-import com.lms.onlinelms.usermanagement.repository.InstructorRepository;
-import com.lms.onlinelms.usermanagement.service.implementation.UserService;
 import lombok.RequiredArgsConstructor;
 import org.bytedeco.ffmpeg.avformat.AVFormatContext;
 import org.bytedeco.ffmpeg.avutil.AVDictionary;
@@ -28,15 +27,12 @@ import java.util.List;
 @Transactional
 public class MediaService implements IMediaService {
 
-    private final ILessonService iLessonService;
+    private final ILessonService lessonService;
     private final VideoRepository videoRepository;
     private final ICourseService courseService;
-    private static final String UPLOAD_DIR = "D:/My Projects/React Projects/OnlineLMS/public";
+    private static final String UPLOAD_DIR = "D:/My Projects/React Projects/sakai-react/public";
     private final FileResourceRepository fileResourceRepository;
-    private final UserService userService;
-    private final InstructorRepository instructorRepository;
-
-
+    private final LessonRepository lessonRepository;
 
 
     @Override
@@ -49,7 +45,7 @@ public class MediaService implements IMediaService {
         }
 
         // Find the lesson
-        Lesson lesson = iLessonService.findLessonById(lessonId);
+        Lesson lesson = lessonService.findLessonById(lessonId);
 
         //get course
         Course course = lesson.getSection().getCourse();
@@ -62,7 +58,7 @@ public class MediaService implements IMediaService {
             throw new AppException("the lesson already has a video ,you have to delete the old video", HttpStatus.BAD_REQUEST);
         }
 
-        String fileUrl = saveFile(file , course);
+        String fileUrl = saveFile(file , "/"+course.getId());
 
 
         Video video = new Video();
@@ -83,7 +79,7 @@ public class MediaService implements IMediaService {
         List<Content> content = new ArrayList<>();
 
         // Find the lesson
-        Lesson lesson = iLessonService.findLessonById(lessonId);
+        Lesson lesson = lessonService.findLessonById(lessonId);
 
         //get course
         Course course = lesson.getSection().getCourse();
@@ -93,7 +89,7 @@ public class MediaService implements IMediaService {
 
         for(MultipartFile file : files){
             String fileType = file.getContentType();
-            String fileUrl = saveFile(file , course);
+            String fileUrl = saveFile(file  , "/"+course.getId());
 
             FileResource fileResource = new FileResource();
             fileResource.setName(file.getOriginalFilename());
@@ -109,10 +105,47 @@ public class MediaService implements IMediaService {
         return content;
     }
 
+    @Override
+    public boolean deleteLessonVideo(Long lessonId) {
+        Lesson lesson = lessonService.findLessonById(lessonId);
+        Course course = lesson.getSection().getCourse();
+        Video video = lesson.getVideo();
+        boolean isDeleted = deleteVideoFile(video);
+        if(isDeleted){
+        videoRepository.delete(video);
+        lesson.setVideo(null);
+        lessonRepository.save(lesson);
+        }
+        return isDeleted;
+    }
 
-    private String saveFile(MultipartFile file , Course course) {
+    private boolean deleteVideoFile(Video video) {
+        if (video == null || video.getUrl() == null || video.getUrl().isEmpty()) {
+            throw new AppException("Video file URL is invalid or not provided.", HttpStatus.BAD_REQUEST);
+        }
+
+        // Create a File object for the video file
+        File videoFile = new File(UPLOAD_DIR + "/"+video.getUrl());
+
+        try {
+            if (videoFile.exists()) {
+                // Attempt to delete the file
+                return videoFile.delete();
+            }
+
+        } catch (SecurityException e) {
+            throw new AppException("Permission denied to delete the file: " + video.getUrl(), HttpStatus.FORBIDDEN);
+        }
+        return false;
+    }
+
+
+
+    public String saveFile(MultipartFile file ,String folderPath) {
         // Create the upload directory if it doesn't exist
-        File uploadDir = new File(UPLOAD_DIR +"/"+course.getId());
+       // File uploadDir = new File(UPLOAD_DIR +"/"+course.getId());
+        File uploadDir = new File(UPLOAD_DIR + folderPath);
+
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();  // Create directories if needed
         }

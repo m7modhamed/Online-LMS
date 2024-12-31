@@ -4,11 +4,9 @@ import com.lms.onlinelms.coursemanagement.model.Content;
 import com.lms.onlinelms.coursemanagement.service.interfaces.IMediaService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -27,6 +25,17 @@ public class MediaController {
         Content content = mediaService.uploadLessonVideo(lesson_id, file);
 
         return ResponseEntity.ok(content);
+    }
+
+    @DeleteMapping("/lessons/{lesson_id}/video")
+    public ResponseEntity<String> deleteVideo(
+            @PathVariable Long lesson_id) {
+
+        boolean isDeleted = mediaService.deleteLessonVideo(lesson_id);
+
+        return isDeleted ?
+                ResponseEntity.ok("video deleted successfully") :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST ).body("video deleted fail");
     }
 
     @PostMapping("/lessons/{lesson_id}/files")

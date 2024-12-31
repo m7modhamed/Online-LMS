@@ -1,5 +1,7 @@
 package com.lms.onlinelms.coursemanagement.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.common.utility.UserUtil;
 import com.lms.onlinelms.coursemanagement.dto.CourseInfoDto;
@@ -12,8 +14,11 @@ import com.lms.onlinelms.usermanagement.model.Instructor;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -22,15 +27,17 @@ public class CourseController {
 
     private final ICourseService courseService;
     private final CourseMapper courseMapper;
+    private  final ObjectMapper objectMapper;
 
+    @PostMapping(value = "/courses" , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<CourseResponseDto> createCourse(
+            @RequestPart("course") @Valid CourseRequestDto courseRequestDto,
+            @RequestPart("image") MultipartFile coverImage) {
 
-    @PostMapping("/courses")
-    public ResponseEntity<CourseResponseDto> createCourse(@RequestBody @Valid CourseRequestDto courseRequestDto){
-        Course course= courseService.createCourse(courseRequestDto);
+        Course course = courseService.createCourse(courseRequestDto, coverImage);
         CourseResponseDto courseResponseDto = courseMapper.toCourseResponseDto(course);
         return ResponseEntity.ok().body(courseResponseDto);
     }
-
 
     @GetMapping("/courses/{courseId}/publishRequest")
     public ResponseEntity<String> publishCourseRequest(@PathVariable Long courseId){

@@ -9,21 +9,22 @@ import com.lms.onlinelms.coursemanagement.exception.CourseAccessException;
 import com.lms.onlinelms.coursemanagement.exception.IncompleteCourseException;
 import com.lms.onlinelms.coursemanagement.exception.UnsuitableCourseStatusException;
 import com.lms.onlinelms.coursemanagement.mapper.CourseMapper;
-import com.lms.onlinelms.coursemanagement.model.Category;
-import com.lms.onlinelms.coursemanagement.model.Course;
-import com.lms.onlinelms.coursemanagement.model.Lesson;
-import com.lms.onlinelms.coursemanagement.model.Section;
+import com.lms.onlinelms.coursemanagement.model.*;
 import com.lms.onlinelms.coursemanagement.repository.CourseRepository;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICategoryService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICourseService;
+import com.lms.onlinelms.coursemanagement.service.interfaces.IMediaService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.IStudentService;
 import com.lms.onlinelms.usermanagement.model.Instructor;
 import com.lms.onlinelms.usermanagement.model.Student;
 import com.lms.onlinelms.usermanagement.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,15 +38,24 @@ public class CourseService implements ICourseService {
     private final ICategoryService categoryService;
     private final CourseRepository courseRepository;
     private final IStudentService studentService;
-
+    @Autowired
+    private IMediaService mediaService;
 
     @Override
-    public Course createCourse(CourseRequestDto courseRequestDto) {
+    public Course createCourse(CourseRequestDto courseRequestDto , MultipartFile image) {
 
         Instructor instructor =(Instructor) UserUtil.getCurrentUser();
 
         Course course=courseMapper.toCourse(courseRequestDto);
 
+        //add course cover image
+        String fileUrl = mediaService.saveFile(image , "/coverImages" );
+        CoverImage coverImage = new CoverImage();
+        coverImage.setName(image.getName());
+        coverImage.setType(image.getContentType());
+        coverImage.setImageUrl(fileUrl);
+
+        course.setCoverImage(coverImage);
         course.setStatus(CourseStatus.DRAFT);
 
         Category category = categoryService.findById(courseRequestDto.getCategory().getId());

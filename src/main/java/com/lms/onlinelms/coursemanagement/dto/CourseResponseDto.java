@@ -2,6 +2,7 @@ package com.lms.onlinelms.coursemanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
+import com.lms.onlinelms.coursemanagement.model.CoverImage;
 import com.lms.onlinelms.usermanagement.dto.InstructorDto;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ public class CourseResponseDto {
     private CategoryDto category;
 
     private InstructorDto instructor;
+
+    private CoverImage coverImage;
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime createdAt;

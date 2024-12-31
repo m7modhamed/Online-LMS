@@ -124,7 +124,7 @@ public class AuthService implements IAuthService {
         tokenService.createPasswordResetTokenForUser(user, passwordResetToken);
 
         // Send password reset verification email to the user
-        String urlWithToken = originUrl + "/reset-password?token=" + passwordResetToken;
+        String urlWithToken = originUrl + "/auth/resetPassword/" + passwordResetToken;
         try {
             eventListener.sendPasswordResetVerificationEmail(urlWithToken, user);
         } catch (UnsupportedEncodingException | MessagingException e) {
@@ -137,9 +137,7 @@ public class AuthService implements IAuthService {
         Token tokenObj=tokenService.validateToken(token);
         User account=tokenObj.getUser();
         String encodedPassword = passwordEncoder.encode(newPassword);
-        if (passwordEncoder.matches(newPassword, account.getMyPassword())) {
-            throw new AppException("The new password must be different from the old password.", HttpStatus.BAD_REQUEST);
-        }
+
 
         account.setMyPassword(encodedPassword);
         userRepository.save(account);

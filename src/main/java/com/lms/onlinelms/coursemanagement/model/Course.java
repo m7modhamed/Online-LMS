@@ -46,6 +46,9 @@ public class Course {
     @ManyToMany(mappedBy = "courses")
     private List<Student> enrolledStudents;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private CoverImage coverImage;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

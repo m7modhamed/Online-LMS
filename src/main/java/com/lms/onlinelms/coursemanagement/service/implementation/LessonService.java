@@ -1,6 +1,5 @@
 package com.lms.onlinelms.coursemanagement.service.implementation;
 
-import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.coursemanagement.model.Lesson;
