@@ -39,5 +39,9 @@ public interface ICourseService {
 
     void deleteCourse(Long courseId);
 
-    Course getCourseForReviewing(Long courseId);
+    Course getCourseForAdmin(Long courseId);
+
+    Course save(Course course);
+
+    List<Course> getAllCoursesForAdmin();
 }

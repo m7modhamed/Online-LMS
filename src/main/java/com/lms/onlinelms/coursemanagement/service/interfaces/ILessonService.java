@@ -8,4 +8,6 @@ public interface ILessonService {
 
 
     Lesson appendLesson(int sectionId, Lesson lesson);
+
+    void saveLesson(Lesson lesson);
 }

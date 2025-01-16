@@ -9,5 +9,5 @@ public class VideoDto {
 
     private String url;
 
-    private double durationInSecond;
+    private double duration;
 }

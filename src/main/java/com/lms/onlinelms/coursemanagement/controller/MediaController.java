@@ -47,4 +47,14 @@ public class MediaController {
 
         return ResponseEntity.ok(content);
     }
+
+
+    @DeleteMapping("/lessons/{lesson_id}/files/{file_id}")
+    public ResponseEntity<String> deleteFile(@PathVariable Long lesson_id
+            ,@PathVariable Long file_id ){
+
+        Boolean isDeleted = mediaService.deleteFile(lesson_id , file_id);
+
+        return isDeleted ? ResponseEntity.ok("file deleted successfully") : ResponseEntity.status(HttpStatus.BAD_REQUEST ).body("file deleted fail");
+    }
 }

@@ -27,7 +27,6 @@ public class CourseInfoDto {
 
     private CoverImage coverImage;
 
-    private int totalHour;
+    private double duration;
 
-    private int totalMinute;
 }

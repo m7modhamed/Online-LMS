@@ -13,4 +13,6 @@ public interface IMediaService {
     List<Content> uploadLessonFiles(Long lessonId, List<MultipartFile> files);
     String saveFile(MultipartFile file  ,String folderPath);
     boolean deleteLessonVideo(Long lessonId);
+
+    Boolean deleteFile(Long lessonId, Long file_id);
 }

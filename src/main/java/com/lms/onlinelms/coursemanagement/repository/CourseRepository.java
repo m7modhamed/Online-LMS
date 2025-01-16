@@ -3,7 +3,6 @@ package com.lms.onlinelms.coursemanagement.repository;
 import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.usermanagement.model.Instructor;
-import com.lms.onlinelms.usermanagement.model.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,9 +17,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     List<Course> findAllByStatus(CourseStatus status);
 
-    Course findByStatusAndId(CourseStatus courseStatus , Long id);
 
-    List<Course> findAllByInstructor(Instructor instructor);
+    List<Course> findAllByInstructorAndStatusNot(Instructor instructor , CourseStatus status);
 
     Optional<Course> findByInstructorAndId(Instructor instructor, Long id);
 }

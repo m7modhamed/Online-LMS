@@ -106,15 +106,21 @@ public class CourseService implements ICourseService {
     @Override
     public List<Course> getCoursesForInstructor(Instructor instructor) {
 
-        return courseRepository.findAllByInstructor(instructor);
+        return courseRepository.findAllByInstructorAndStatusNot(instructor ,CourseStatus.DELETED);
     }
 
     @Override
     public Course getCourseForInstructor(Instructor instructor,long courseId) {
-        return courseRepository
+
+        Course course =  courseRepository
                 .findByInstructorAndId(instructor, courseId).orElseThrow(
                         () -> new ResourceNotFoundException("Course with ID " + courseId + " not found for the given instructor.", HttpStatus.NOT_FOUND)
                 );
+
+        if(course.getStatus() == CourseStatus.DELETED) {
+            throw new AppException("This course has been removed and is no longer available.", HttpStatus.BAD_REQUEST);
+        }
+        return course;
     }
 
     @Override
@@ -125,9 +131,20 @@ public class CourseService implements ICourseService {
 
 
     @Override
-    public Course getCourseForReviewing(Long courseId) {
-        return courseRepository.findByStatusAndId(CourseStatus.IN_REVIEW,courseId);
+    public Course getCourseForAdmin(Long courseId) {
+        return findCourseById(courseId);
     }
+
+    @Override
+    public Course save(Course course) {
+        return courseRepository.save(course);
+    }
+
+    @Override
+    public List<Course> getAllCoursesForAdmin() {
+        return courseRepository.findAll();
+    }
+
     private void checkStableCourseForPublishing(Course course) {
 
         if(course.getStatus() != CourseStatus.DRAFT) {

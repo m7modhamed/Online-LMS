@@ -49,6 +49,11 @@ public class Course {
     @OneToOne(cascade = CascadeType.ALL)
     private CoverImage coverImage;
 
+
+    @Column(nullable = true)
+    private double duration;
+
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

@@ -1,6 +1,7 @@
 package com.lms.onlinelms.coursemanagement.mapper;
 
 
+import com.lms.onlinelms.coursemanagement.dto.AdminCourseInfoDto;
 import com.lms.onlinelms.coursemanagement.dto.CourseInfoDto;
 import com.lms.onlinelms.coursemanagement.dto.CourseRequestDto;
 import com.lms.onlinelms.coursemanagement.dto.CourseResponseDto;
@@ -22,4 +23,5 @@ public interface CourseMapper {
 
     List<CourseResponseDto> toCourseResponseDto(List<Course> course);
 
+    List<AdminCourseInfoDto> toAdminCourseInfoDto(List<Course> courses);
 }

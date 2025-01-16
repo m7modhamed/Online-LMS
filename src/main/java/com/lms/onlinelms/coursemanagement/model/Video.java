@@ -11,5 +11,5 @@ import lombok.*;
 public class Video extends Content{
 
 
-    private double durationInSecond;
+    private double duration;
 }

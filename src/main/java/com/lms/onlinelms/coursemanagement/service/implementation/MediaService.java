@@ -1,11 +1,13 @@
 package com.lms.onlinelms.coursemanagement.service.implementation;
 
 import com.lms.onlinelms.common.exceptions.AppException;
+import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.coursemanagement.model.*;
 import com.lms.onlinelms.coursemanagement.repository.FileResourceRepository;
 import com.lms.onlinelms.coursemanagement.repository.LessonRepository;
 import com.lms.onlinelms.coursemanagement.repository.VideoRepository;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICourseService;
+import com.lms.onlinelms.coursemanagement.service.interfaces.IFileResourceService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ILessonService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.IMediaService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ public class MediaService implements IMediaService {
     private static final String UPLOAD_DIR = "D:/My Projects/React Projects/sakai-react/public";
     private final FileResourceRepository fileResourceRepository;
     private final LessonRepository lessonRepository;
-
+    private final IFileResourceService fileResourceService;
 
     @Override
     public Content uploadLessonVideo(Long lessonId , MultipartFile file) {
@@ -64,12 +66,15 @@ public class MediaService implements IMediaService {
         Video video = new Video();
         String[] urlParts = fileUrl.split("\\\\");
         video.setUrl("\\"+ course.getId() + "\\" + urlParts[urlParts.length-1]);
-        video.setDurationInSecond(extractVideoDuration(fileUrl));
-
+        double videoDuration = extractVideoDuration(fileUrl);
+        video.setDuration(videoDuration);
 
         lesson.setVideo(video);
         content = videoRepository.save(video);
 
+        //update course duration
+        course.setDuration(course.getDuration() + videoDuration);
+        courseService.save(course);
 
         return content;
     }
@@ -86,6 +91,8 @@ public class MediaService implements IMediaService {
 
         //check for the use own this course or not
         courseService.checkInstructorIsOwner(course);
+
+
 
         for(MultipartFile file : files){
             String fileType = file.getContentType();
@@ -105,6 +112,38 @@ public class MediaService implements IMediaService {
         return content;
     }
 
+
+    /*private boolean deleteAllFiles(Long courseId) {
+        File directory = new File(UPLOAD_DIR + "/" + courseId);
+
+        if (directory.exists() && directory.isDirectory()) {
+            File[] files = directory.listFiles();
+
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile() && !isVideoFile(file)) {
+                        file.delete(); // Delete the file
+                    }
+                }
+            }
+        }
+
+        return directory.delete(); // Delete the empty directory itself
+    }
+
+    private boolean isVideoFile(File file) {
+
+        String[] videoExtensions = {".mp4", ".avi", ".mkv", ".mov", ".flv", ".wmv", ".webm", ".mpg", ".mpeg"};
+
+        String fileName = file.getName().toLowerCase();
+        for (String extension : videoExtensions) {
+            if (fileName.endsWith(extension)) {
+                return true;
+            }
+        }
+        return false;
+    }*/
+
     @Override
     public boolean deleteLessonVideo(Long lessonId) {
         Lesson lesson = lessonService.findLessonById(lessonId);
@@ -115,9 +154,42 @@ public class MediaService implements IMediaService {
         videoRepository.delete(video);
         lesson.setVideo(null);
         lessonRepository.save(lesson);
+
+        //update course duration
+        course.setDuration(course.getDuration() - video.getDuration());
+        courseService.save(course);
         }
         return isDeleted;
     }
+
+    @Override
+    public Boolean deleteFile(Long lessonId, Long fileId) {
+        // Fetch the lesson by ID
+        Lesson lesson = lessonService.findLessonById(lessonId);
+        Course course = lesson.getSection().getCourse();
+        courseService.checkInstructorIsOwner(lesson.getSection().getCourse());
+
+        FileResource file = fileResourceService.getFileById(fileId);
+
+        // Check and remove the file from the file resource list
+        boolean fileRemoved = lesson.getFileResource().removeIf(f -> f.getId().equals(file.getId()));
+
+        if (fileRemoved) {
+            // Optionally delete the file from the storage (e.g., file system or cloud storage)
+            File fileToDelete = new File(UPLOAD_DIR + "/" + course.getId() + "/" + file.getName());
+            if (fileToDelete.exists() && fileToDelete.isFile()) {
+                fileToDelete.delete();
+
+                // Save the updated lesson object (if changes need to be persisted)
+                fileResourceService.deleteFile(file);
+                return true;
+            }
+
+        }
+            return false; // Return false if the file was not found in the resources
+
+    }
+
 
     private boolean deleteVideoFile(Video video) {
         if (video == null || video.getUrl() == null || video.getUrl().isEmpty()) {

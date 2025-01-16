@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/categories","/courses/*/publishRequest" , "/instructor/*/courses","/instructor/*/courses/*" , "/courses/*/archive").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.DELETE , "/courses/*").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.POST,"/categories").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "courses/*/publish" , "/review/courses/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "courses/*/publish" , "/review/courses/**" , "/admin/courses").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/students/*/courses/*" ).hasRole("STUDENT")
                         .requestMatchers(HttpMethod.POST , "/students/*/courses/*/enroll").hasRole("STUDENT")
 

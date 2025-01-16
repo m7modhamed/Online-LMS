@@ -1,9 +1,9 @@
 package com.lms.onlinelms.coursemanagement.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.common.utility.UserUtil;
+import com.lms.onlinelms.coursemanagement.dto.AdminCourseInfoDto;
 import com.lms.onlinelms.coursemanagement.dto.CourseInfoDto;
 import com.lms.onlinelms.coursemanagement.dto.CourseRequestDto;
 import com.lms.onlinelms.coursemanagement.dto.CourseResponseDto;
@@ -64,6 +64,15 @@ public class CourseController {
         return ResponseEntity.ok(courseInfoDto);
     }
 
+    @GetMapping("/admin/courses")
+    public ResponseEntity<List<AdminCourseInfoDto>> getAllCoursesForAdmin(){
+        List<Course> courses= courseService.getAllCoursesForAdmin();
+
+        List<AdminCourseInfoDto> courseInfoDto=courseMapper.toAdminCourseInfoDto(courses);
+
+        return ResponseEntity.ok(courseInfoDto);
+    }
+
     @GetMapping("/students/{studentId}/courses/{courseId}")
     public ResponseEntity<?> getStudentCourseById(@PathVariable Long courseId
             , @PathVariable Long studentId){
@@ -107,12 +116,12 @@ public class CourseController {
     }
 
     @GetMapping("/review/courses")
-    public ResponseEntity<List<CourseInfoDto>> getCoursesForReviewing() {
+    public ResponseEntity<List<AdminCourseInfoDto>> getCoursesForReviewing() {
 
 
         List<Course> courses= courseService.getCoursesForReviewing();
 
-        List<CourseInfoDto> courseInfoDto = courseMapper.toCourseInfoDto(courses);
+        List<AdminCourseInfoDto> courseInfoDto = courseMapper.toAdminCourseInfoDto(courses);
 
         return ResponseEntity.ok(courseInfoDto);
     }
@@ -121,7 +130,7 @@ public class CourseController {
     public ResponseEntity<CourseResponseDto> getCourseForReviewing(
             @PathVariable Long courseId) {
 
-        Course course= courseService.getCourseForReviewing(courseId);
+        Course course= courseService.getCourseForAdmin(courseId);
 
         CourseResponseDto courseResponseDto = courseMapper.toCourseResponseDto(course);
 

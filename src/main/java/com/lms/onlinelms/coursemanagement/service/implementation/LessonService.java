@@ -40,4 +40,9 @@ public class LessonService implements ILessonService {
 
         return lessonRepository.save(lesson);
     }
+
+    @Override
+    public void saveLesson(Lesson lesson) {
+        lessonRepository.save(lesson);
+    }
 }
