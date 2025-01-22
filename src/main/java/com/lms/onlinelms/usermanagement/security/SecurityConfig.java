@@ -44,13 +44,13 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/register/**" ,"/verifyEmail/**","/resetPassword/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**" , "/forgot-password-request/**" , "/courses").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**" , "/forgot-password-request/**" , "/courses" ).permitAll()
                         .requestMatchers(HttpMethod.POST,"/courses" , "/courses/*/sections" , "/lessons/*/media" , "sections/*/lessons").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.GET, "/categories","/courses/*/publishRequest" , "/instructor/*/courses","/instructor/*/courses/*" , "/courses/*/archive").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.DELETE , "/courses/*").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.POST,"/categories").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "courses/*/publish" , "/review/courses/**" , "/admin/courses").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET,"/students/*/courses/*" ).hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET,"/students/*/courses/**" , "/courses/*" , "/students/*/lessons/*").hasRole("STUDENT")
                         .requestMatchers(HttpMethod.POST , "/students/*/courses/*/enroll").hasRole("STUDENT")
 
                         .anyRequest().authenticated());

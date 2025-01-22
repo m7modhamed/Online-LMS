@@ -84,13 +84,13 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public Course getCourseForStudentById(Long courseId , Long studentId) {
+    public Course getEnrolledCourseForStudentById(Long courseId , Long studentId) {
         Student student = (Student) UserUtil.getCurrentUser();
 
         // check user id is same with user that logged by token
         checkIfUserIdCorrect(student , studentId);
 
-        return courseRepository.findPublishedCourseByIdAndStudentId(courseId, studentId);
+        return courseRepository.findByStatusAndId(CourseStatus.PUBLISHED,courseId);
     }
 
     @Override
@@ -143,6 +143,23 @@ public class CourseService implements ICourseService {
     @Override
     public List<Course> getAllCoursesForAdmin() {
         return courseRepository.findAll();
+    }
+
+    @Override
+    public Course getPublishedCourseById(Long courseId) {
+        return courseRepository.findByStatusAndId(CourseStatus.PUBLISHED,courseId);
+    }
+
+    @Override
+    public boolean isStudentEnrolledIntoCourse(Long studentId, Long courseId) {
+        Student student = (Student) UserUtil.getCurrentUser();
+        checkIfUserIdCorrect(student , studentId);
+        return student.getCourses().contains(findCourseById(courseId));
+    }
+
+    @Override
+    public List<Course> getEnrolledCoursesForStudent(Long studentId) {
+       return courseRepository.findAllByEnrolledStudentsId(studentId);
     }
 
     private void checkStableCourseForPublishing(Course course) {
@@ -213,8 +230,11 @@ public class CourseService implements ICourseService {
         if(course.getStatus() != CourseStatus.PUBLISHED){
             throw new UnsuitableCourseStatusException("The course is not currently in the publish stage.", HttpStatus.BAD_REQUEST);
         }
-        student.getCourses().add(course);
 
+        if(student.getCourses().contains(course)){
+            throw new AppException("you already enrolled in this course.",HttpStatus.BAD_REQUEST);
+        }
+        student.getCourses().add(course);
         studentService.saveStudent(student);
     }
 

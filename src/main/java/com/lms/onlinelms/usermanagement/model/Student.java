@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Student extends User {
 
-    @ManyToMany(cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "student_course",
             joinColumns =@JoinColumn(name = "student_id"),

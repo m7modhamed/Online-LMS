@@ -27,7 +27,6 @@ public class CourseController {
 
     private final ICourseService courseService;
     private final CourseMapper courseMapper;
-    private  final ObjectMapper objectMapper;
 
     @PostMapping(value = "/courses" , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<CourseResponseDto> createCourse(
@@ -64,6 +63,15 @@ public class CourseController {
         return ResponseEntity.ok(courseInfoDto);
     }
 
+    @GetMapping("/courses/{courseId}")
+    public ResponseEntity<CourseResponseDto> getCourse(@PathVariable Long courseId){
+        Course course= courseService.getPublishedCourseById(courseId);
+
+        CourseResponseDto courseInfoDto=courseMapper.toCourseResponseDto(course);
+
+        return ResponseEntity.ok(courseInfoDto);
+    }
+
     @GetMapping("/admin/courses")
     public ResponseEntity<List<AdminCourseInfoDto>> getAllCoursesForAdmin(){
         List<Course> courses= courseService.getAllCoursesForAdmin();
@@ -73,10 +81,24 @@ public class CourseController {
         return ResponseEntity.ok(courseInfoDto);
     }
 
+
+    @GetMapping("/students/{studentId}/courses")
+    public ResponseEntity<?> getEnrolledCoursesForStudent(@PathVariable Long studentId){
+        List<Course> course= courseService.getEnrolledCoursesForStudent(studentId);
+
+        List<CourseInfoDto> courseResponseDto=courseMapper.toCourseInfoDto(course);
+
+        if(courseResponseDto == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found");
+        }
+
+        return ResponseEntity.ok(courseResponseDto);
+    }
+
     @GetMapping("/students/{studentId}/courses/{courseId}")
-    public ResponseEntity<?> getStudentCourseById(@PathVariable Long courseId
+    public ResponseEntity<?> getEnrolledCourseForStudentById(@PathVariable Long courseId
             , @PathVariable Long studentId){
-        Course course= courseService.getCourseForStudentById(courseId , studentId);
+        Course course= courseService.getEnrolledCourseForStudentById(courseId , studentId);
 
         CourseResponseDto courseResponseDto=courseMapper.toCourseResponseDto(course);
 
@@ -150,7 +172,7 @@ public class CourseController {
 
         courseService.enrollStudentIntoCourse(studentId , courseId);
 
-        return ResponseEntity.ok("Student successfully enrolled in course.");
+        return ResponseEntity.ok("you successfully enrolled in the course.");
     }
 
     @DeleteMapping("/courses/{courseId}")
@@ -160,4 +182,12 @@ public class CourseController {
         return ResponseEntity.ok("Your course has been marked as deleted.");
     }
 
+
+    @GetMapping("/students/{studentId}/courses/{courseId}/isEnrolled")
+    public ResponseEntity<Boolean> isEnrolled(@PathVariable Long studentId, @PathVariable Long courseId){
+
+        boolean isEnrolled = courseService.isStudentEnrolledIntoCourse(studentId , courseId);
+
+        return ResponseEntity.ok(isEnrolled);
+    }
 }

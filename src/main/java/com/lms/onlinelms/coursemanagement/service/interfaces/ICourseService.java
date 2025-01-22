@@ -19,7 +19,7 @@ public interface ICourseService {
 
     List<Course> getAllPublishedCourses();
 
-    Course getCourseForStudentById(Long courseId , Long studentId);
+    Course getEnrolledCourseForStudentById(Long courseId , Long studentId);
 
     Course publishCourse(Long courseId);
 
@@ -44,4 +44,10 @@ public interface ICourseService {
     Course save(Course course);
 
     List<Course> getAllCoursesForAdmin();
+
+    Course getPublishedCourseById(Long courseId);
+
+    boolean isStudentEnrolledIntoCourse(Long studentId, Long courseId);
+
+    List<Course> getEnrolledCoursesForStudent(Long studentId);
 }
