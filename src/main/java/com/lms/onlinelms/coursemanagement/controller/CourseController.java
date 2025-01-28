@@ -1,12 +1,8 @@
 package com.lms.onlinelms.coursemanagement.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.common.utility.UserUtil;
-import com.lms.onlinelms.coursemanagement.dto.AdminCourseInfoDto;
-import com.lms.onlinelms.coursemanagement.dto.CourseInfoDto;
-import com.lms.onlinelms.coursemanagement.dto.CourseRequestDto;
-import com.lms.onlinelms.coursemanagement.dto.CourseResponseDto;
+import com.lms.onlinelms.coursemanagement.dto.*;
 import com.lms.onlinelms.coursemanagement.mapper.CourseMapper;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICourseService;
@@ -63,14 +59,14 @@ public class CourseController {
         return ResponseEntity.ok(courseInfoDto);
     }
 
-    @GetMapping("/courses/{courseId}")
+/*    @GetMapping("/courses/{courseId}")
     public ResponseEntity<CourseResponseDto> getCourse(@PathVariable Long courseId){
         Course course= courseService.getPublishedCourseById(courseId);
 
         CourseResponseDto courseInfoDto=courseMapper.toCourseResponseDto(course);
 
         return ResponseEntity.ok(courseInfoDto);
-    }
+    }*/
 
     @GetMapping("/admin/courses")
     public ResponseEntity<List<AdminCourseInfoDto>> getAllCoursesForAdmin(){
@@ -79,6 +75,23 @@ public class CourseController {
         List<AdminCourseInfoDto> courseInfoDto=courseMapper.toAdminCourseInfoDto(courses);
 
         return ResponseEntity.ok(courseInfoDto);
+    }
+
+    @GetMapping("/admin/courses/info")
+    public ResponseEntity<DashboardInfoDto> getAdminDashboardInfo(){
+        return ResponseEntity.ok(courseService.getAdminDashboardInfo());
+    }
+
+    @GetMapping("/instructor/{instructorId}/courses/info")
+    public ResponseEntity<DashboardInfoDto> getInstructorDashboardInfo(@PathVariable Long instructorId){
+
+        return ResponseEntity.ok(courseService.getInstructorDashboardInfo(instructorId));
+    }
+
+    @GetMapping("/student/{studentId}/courses/info")
+    public ResponseEntity<DashboardInfoDto> getStudentDashboardInfo(@PathVariable Long studentId){
+
+        return ResponseEntity.ok(courseService.getStudentDashboardInfo(studentId));
     }
 
 
@@ -109,18 +122,18 @@ public class CourseController {
     }
 
     @GetMapping("/instructor/{instructorId}/courses")
-    public ResponseEntity<List<CourseInfoDto>> getCoursesForInstructor(@PathVariable long instructorId){
+    public ResponseEntity<List<CourseInfoDto>> getInstructorCourses(@PathVariable long instructorId){
         Instructor instructor =(Instructor) UserUtil.getCurrentUser();
         if(instructorId != instructor.getId()){
             throw new AppException("the instructor id is not correct ,please try again.", HttpStatus.BAD_REQUEST);
         }
-        List<Course> courseList= courseService.getCoursesForInstructor(instructor);
+        List<Course> courseList= courseService.getInstructorCourses(instructor);
 
         return ResponseEntity.ok(courseMapper.toCourseInfoDto(courseList));
     }
 
     @GetMapping("/instructor/{instructorId}/courses/{courseId}")
-    public ResponseEntity<CourseResponseDto> getCourseForInstructor(
+    public ResponseEntity<CourseResponseDto> getInstructorCourse(
             @PathVariable long instructorId
             , @PathVariable long courseId) {
 
@@ -129,7 +142,7 @@ public class CourseController {
             throw new AppException("the instructor id is not correct ,please try again.", HttpStatus.BAD_REQUEST);
         }
 
-        Course course= courseService.getCourseForInstructor(instructor,courseId);
+        Course course= courseService.getInstructorCourse(instructor,courseId);
 
         CourseResponseDto courseResponseDto =
                 courseMapper.toCourseResponseDto(course);
@@ -159,7 +172,7 @@ public class CourseController {
         return ResponseEntity.ok(courseResponseDto);
     }
 
-    @GetMapping("courses/{courseId}/archive")
+    @GetMapping("/courses/{courseId}/archive")
     public ResponseEntity<String> archiveCourse(@PathVariable Long courseId){
 
         courseService.archiveCourse(courseId);

@@ -25,12 +25,6 @@ public class AuthController {
     private final IAuthService authService;
     private final UserAuthenticationProvider userAuthenticationProvider;
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-
-        return ResponseEntity.ok("hello");
-    }
-
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         User user = authService.login(loginRequestDto);

@@ -2,6 +2,7 @@ package com.lms.onlinelms.coursemanagement.service.interfaces;
 
 import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.coursemanagement.dto.CourseRequestDto;
+import com.lms.onlinelms.coursemanagement.dto.DashboardInfoDto;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.usermanagement.model.Instructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,9 +24,9 @@ public interface ICourseService {
 
     Course publishCourse(Long courseId);
 
-    List<Course> getCoursesForInstructor(Instructor instructor);
+    List<Course> getInstructorCourses(Instructor instructor);
 
-    Course getCourseForInstructor(Instructor instructor , long courseId);
+    Course getInstructorCourse(Instructor instructor , long courseId);
 
     Course findCourseById(long courseId);
 
@@ -50,4 +51,10 @@ public interface ICourseService {
     boolean isStudentEnrolledIntoCourse(Long studentId, Long courseId);
 
     List<Course> getEnrolledCoursesForStudent(Long studentId);
+
+    DashboardInfoDto getAdminDashboardInfo();
+
+    DashboardInfoDto getInstructorDashboardInfo(Long instructorId);
+
+    DashboardInfoDto getStudentDashboardInfo(Long studentId);
 }

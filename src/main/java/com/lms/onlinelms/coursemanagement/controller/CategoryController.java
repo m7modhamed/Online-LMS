@@ -3,7 +3,6 @@ package com.lms.onlinelms.coursemanagement.controller;
 import com.lms.onlinelms.coursemanagement.dto.CategoryDto;
 import com.lms.onlinelms.coursemanagement.mapper.CategoryMapper;
 import com.lms.onlinelms.coursemanagement.model.Category;
-import com.lms.onlinelms.coursemanagement.service.implementation.CategoryService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

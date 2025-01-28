@@ -4,6 +4,7 @@ import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.common.utility.UserUtil;
 import com.lms.onlinelms.coursemanagement.dto.CourseRequestDto;
+import com.lms.onlinelms.coursemanagement.dto.DashboardInfoDto;
 import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
 import com.lms.onlinelms.coursemanagement.exception.CourseAccessException;
 import com.lms.onlinelms.coursemanagement.exception.IncompleteCourseException;
@@ -20,12 +21,12 @@ import com.lms.onlinelms.usermanagement.model.Student;
 import com.lms.onlinelms.usermanagement.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -104,13 +105,13 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public List<Course> getCoursesForInstructor(Instructor instructor) {
+    public List<Course> getInstructorCourses(Instructor instructor) {
 
         return courseRepository.findAllByInstructorAndStatusNot(instructor ,CourseStatus.DELETED);
     }
 
     @Override
-    public Course getCourseForInstructor(Instructor instructor,long courseId) {
+    public Course getInstructorCourse(Instructor instructor, long courseId) {
 
         Course course =  courseRepository
                 .findByInstructorAndId(instructor, courseId).orElseThrow(
@@ -160,6 +161,66 @@ public class CourseService implements ICourseService {
     @Override
     public List<Course> getEnrolledCoursesForStudent(Long studentId) {
        return courseRepository.findAllByEnrolledStudentsId(studentId);
+    }
+
+    @Override
+    public DashboardInfoDto getAdminDashboardInfo() {
+        LocalDateTime lastWeek = LocalDateTime.now().minusWeeks(1);
+
+        Long CoursesCount=courseRepository.count();
+        int LastWeekCoursesCount=courseRepository.countByCreatedAtIsAfter(lastWeek);
+        int reviewCoursesCount=courseRepository.countByStatus(CourseStatus.IN_REVIEW);
+        int publishCoursesCount=courseRepository.countByStatus(CourseStatus.PUBLISHED);
+        int archivedCoursesCount=courseRepository.countByStatus(CourseStatus.ARCHIVED);
+        int deletedCoursesCount=courseRepository.countByStatus(CourseStatus.DELETED);
+        int draftCoursesCount=courseRepository.countByStatus(CourseStatus.DRAFT);
+
+        return getDashboardInfoDto(CoursesCount, LastWeekCoursesCount, reviewCoursesCount, publishCoursesCount, archivedCoursesCount, deletedCoursesCount, draftCoursesCount);
+    }
+
+    @Override
+    public DashboardInfoDto getInstructorDashboardInfo(Long instructorId) {
+        User user = UserUtil.getCurrentUser();
+        checkIfUserIdCorrect(user , instructorId);
+        LocalDateTime lastWeek = LocalDateTime.now().minusWeeks(1);
+
+        Long CoursesCount=courseRepository.countByInstructorId(instructorId);
+        int LastWeekCoursesCount=courseRepository.countByCreatedAtIsAfterAndInstructorId(lastWeek , instructorId);
+        int reviewCoursesCount=courseRepository.countByStatusAndInstructorId(CourseStatus.IN_REVIEW , instructorId);
+        int publishCoursesCount=courseRepository.countByStatusAndInstructorId(CourseStatus.PUBLISHED, instructorId);
+        int archivedCoursesCount=courseRepository.countByStatusAndInstructorId(CourseStatus.ARCHIVED, instructorId);
+        int deletedCoursesCount=courseRepository.countByStatusAndInstructorId(CourseStatus.DELETED, instructorId);
+        int draftCoursesCount=courseRepository.countByStatusAndInstructorId(CourseStatus.DRAFT, instructorId);
+
+        return getDashboardInfoDto(CoursesCount, LastWeekCoursesCount, reviewCoursesCount, publishCoursesCount, archivedCoursesCount, deletedCoursesCount, draftCoursesCount);
+    }
+
+    @Override
+    public DashboardInfoDto getStudentDashboardInfo(Long studentId) {
+        User user = UserUtil.getCurrentUser();
+        checkIfUserIdCorrect(user , studentId);
+
+        Long CoursesCount=courseRepository.countByStudentId(studentId);
+        int reviewCoursesCount=courseRepository.countByStatusAndStudentId(CourseStatus.IN_REVIEW , studentId);
+        int publishCoursesCount=courseRepository.countByStatusAndStudentId(CourseStatus.PUBLISHED, studentId);
+        int archivedCoursesCount=courseRepository.countByStatusAndStudentId(CourseStatus.ARCHIVED, studentId);
+        int deletedCoursesCount=courseRepository.countByStatusAndStudentId(CourseStatus.DELETED, studentId);
+        int draftCoursesCount=courseRepository.countByStatusAndStudentId(CourseStatus.DRAFT, studentId);
+
+        return getDashboardInfoDto(CoursesCount, 0, reviewCoursesCount, publishCoursesCount, archivedCoursesCount, deletedCoursesCount, draftCoursesCount);
+    }
+
+    private DashboardInfoDto getDashboardInfoDto(Long coursesCount, int lastWeekCoursesCount, int reviewCoursesCount, int publishCoursesCount, int archivedCoursesCount, int deletedCoursesCount, int draftCoursesCount) {
+        DashboardInfoDto dashboardInfoDto=new DashboardInfoDto();
+        dashboardInfoDto.setCoursesCount(coursesCount);
+        dashboardInfoDto.setPublishCoursesCount(publishCoursesCount);
+        dashboardInfoDto.setDeletedCoursesCount(deletedCoursesCount);
+        dashboardInfoDto.setReviewCoursesCount(reviewCoursesCount);
+        dashboardInfoDto.setArchivedCoursesCount(archivedCoursesCount);
+        dashboardInfoDto.setLastWeekCoursesCount(lastWeekCoursesCount);
+        dashboardInfoDto.setDraftCoursesCount(draftCoursesCount);
+
+        return dashboardInfoDto;
     }
 
     private void checkStableCourseForPublishing(Course course) {
@@ -261,7 +322,7 @@ public class CourseService implements ICourseService {
     // check user id is same with user that logged by token
     private void checkIfUserIdCorrect(User user , Long userId){
         if(!user.getId().equals(userId)){
-            throw new AppException("the student id is not correct ,please try again.", HttpStatus.BAD_REQUEST);
+            throw new AppException("the user id is not correct ,please try again.", HttpStatus.BAD_REQUEST);
         }
     }
 }
