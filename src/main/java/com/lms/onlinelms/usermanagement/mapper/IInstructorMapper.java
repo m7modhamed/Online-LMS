@@ -1,5 +1,6 @@
 package com.lms.onlinelms.usermanagement.mapper;
 
+import com.lms.onlinelms.usermanagement.dto.InstructorDto;
 import com.lms.onlinelms.usermanagement.dto.InstructorSignupDto;
 import com.lms.onlinelms.usermanagement.model.Instructor;
 import org.mapstruct.Mapper;
@@ -35,4 +36,5 @@ public interface IInstructorMapper {
         return instructor;
     }
 
+    InstructorDto toInstructorDto(Instructor instructor);
 }

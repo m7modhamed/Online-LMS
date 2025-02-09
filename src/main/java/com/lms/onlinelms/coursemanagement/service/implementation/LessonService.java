@@ -2,7 +2,6 @@ package com.lms.onlinelms.coursemanagement.service.implementation;
 
 import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.coursemanagement.exception.CourseAccessException;
-import com.lms.onlinelms.coursemanagement.exception.IncompleteCourseException;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.coursemanagement.model.Lesson;
 import com.lms.onlinelms.coursemanagement.model.Section;
@@ -10,9 +9,7 @@ import com.lms.onlinelms.coursemanagement.repository.LessonRepository;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICourseService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ILessonService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ISectionService;
-import com.lms.onlinelms.coursemanagement.service.interfaces.IStudentService;
 import com.lms.onlinelms.usermanagement.model.Student;
-import com.lms.onlinelms.usermanagement.model.User;
 import com.lms.onlinelms.usermanagement.service.interfaces.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

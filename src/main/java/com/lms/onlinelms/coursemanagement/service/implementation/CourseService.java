@@ -15,10 +15,10 @@ import com.lms.onlinelms.coursemanagement.repository.CourseRepository;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICategoryService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICourseService;
 import com.lms.onlinelms.coursemanagement.service.interfaces.IMediaService;
-import com.lms.onlinelms.coursemanagement.service.interfaces.IStudentService;
 import com.lms.onlinelms.usermanagement.model.Instructor;
 import com.lms.onlinelms.usermanagement.model.Student;
-import com.lms.onlinelms.usermanagement.model.User;
+import com.lms.onlinelms.usermanagement.service.interfaces.IStudentService;
+import com.lms.onlinelms.usermanagement.service.interfaces.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +39,7 @@ public class CourseService implements ICourseService {
     private final ICategoryService categoryService;
     private final CourseRepository courseRepository;
     private final IStudentService studentService;
+    private final IUserService userService;
     @Autowired
     private IMediaService mediaService;
 
@@ -86,10 +87,8 @@ public class CourseService implements ICourseService {
 
     @Override
     public Course getEnrolledCourseForStudentById(Long courseId , Long studentId) {
-        Student student = (Student) UserUtil.getCurrentUser();
-
         // check user id is same with user that logged by token
-        checkIfUserIdCorrect(student , studentId);
+        userService.checkIfUserIdCorrect(studentId);
 
         return courseRepository.findByStatusAndId(CourseStatus.PUBLISHED,courseId);
     }
@@ -154,7 +153,7 @@ public class CourseService implements ICourseService {
     @Override
     public boolean isStudentEnrolledIntoCourse(Long studentId, Long courseId) {
         Student student = (Student) UserUtil.getCurrentUser();
-        checkIfUserIdCorrect(student , studentId);
+        userService.checkIfUserIdCorrect(studentId);
         return student.getCourses().contains(findCourseById(courseId));
     }
 
@@ -180,8 +179,7 @@ public class CourseService implements ICourseService {
 
     @Override
     public DashboardInfoDto getInstructorDashboardInfo(Long instructorId) {
-        User user = UserUtil.getCurrentUser();
-        checkIfUserIdCorrect(user , instructorId);
+        userService.checkIfUserIdCorrect(instructorId);
         LocalDateTime lastWeek = LocalDateTime.now().minusWeeks(1);
 
         Long CoursesCount=courseRepository.countByInstructorId(instructorId);
@@ -197,8 +195,7 @@ public class CourseService implements ICourseService {
 
     @Override
     public DashboardInfoDto getStudentDashboardInfo(Long studentId) {
-        User user = UserUtil.getCurrentUser();
-        checkIfUserIdCorrect(user , studentId);
+        userService.checkIfUserIdCorrect( studentId);
 
         Long CoursesCount=courseRepository.countByStudentId(studentId);
         int reviewCoursesCount=courseRepository.countByStatusAndStudentId(CourseStatus.IN_REVIEW , studentId);
@@ -284,7 +281,7 @@ public class CourseService implements ICourseService {
         Student student = (Student) UserUtil.getCurrentUser();
 
         // check user id is same with user that logged by token
-        checkIfUserIdCorrect(student , studentId);
+        userService.checkIfUserIdCorrect(studentId);
 
         Course course = findCourseById(courseId);
 
@@ -319,10 +316,5 @@ public class CourseService implements ICourseService {
 
 
 
-    // check user id is same with user that logged by token
-    private void checkIfUserIdCorrect(User user , Long userId){
-        if(!user.getId().equals(userId)){
-            throw new AppException("the user id is not correct ,please try again.", HttpStatus.BAD_REQUEST);
-        }
-    }
+
 }

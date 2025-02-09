@@ -5,4 +5,5 @@ import com.lms.onlinelms.usermanagement.model.User;
 public interface IUserService {
 
     User getUserByEmail(String email);
+    void checkIfUserIdCorrect( Long userId);
 }

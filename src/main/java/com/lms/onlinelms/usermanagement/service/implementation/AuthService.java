@@ -42,7 +42,6 @@ public class AuthService implements IAuthService {
     private final ITokenService tokenService;
     private final RegistrationCompleteEventListener eventListener;
     private final PasswordEncoder passwordEncoder;
-    private final AdminRepository adminRepository;
 
     @Override
     public Student signupStudent(StudentSignupDto studentSignupDto, HttpServletRequest request) {
@@ -147,56 +146,6 @@ public class AuthService implements IAuthService {
         return "Password reset successfully";
     }
 
-    @Override
-    public void updateStudent(StudentUpdateDto studentUpdateDto, Long studentId) {
-        Student student= findStudentById(studentId);
-
-        student.setFirstName(studentUpdateDto.getFirstName());
-        student.setLastName(studentUpdateDto.getLastName());
-        student.setProfileImage(studentUpdateDto.getProfileImage());
-        student.setPhoneNumber(studentUpdateDto.getPhoneNumber());
-
-        studentRepository.save(student);
-    }
-
-    @Override
-    public void updateInstructor(InstructorUpdateDto instructorUpdateDto, Long instructorId) {
-        Instructor instructor = findInstructorById(instructorId);
-        instructor.setFirstName(instructorUpdateDto.getFirstName());
-        instructor.setLastName(instructorUpdateDto.getLastName());
-        instructor.setProfileImage(instructorUpdateDto.getProfileImage());
-        instructor.setPhoneNumber(instructorUpdateDto.getPhoneNumber());
-        instructor.setSpecialization(instructorUpdateDto.getSpecialization());
-        instructor.setAboutMe(instructorUpdateDto.getAboutMe());
-        instructor.setGithubUrl(instructorUpdateDto.getGithubUrl());
-        instructor.setTwitterUrl(instructorUpdateDto.getTwitterUrl());
-        instructor.setFacebookUrl(instructorUpdateDto.getFacebookUrl());
-        instructor.setLinkedinUrl(instructorUpdateDto.getLinkedinUrl());
-
-
-        instructorRepository.save(instructor);
-    }
-
-    @Override
-    public void updateAdmin(AdminUpdateDto adminUpdateDto, Long adminId) {
-
-        Admin admin = findAdminById(adminId);
-        admin.setFirstName(adminUpdateDto.getFirstName());
-        admin.setLastName(adminUpdateDto.getLastName());
-        admin.setProfileImage(adminUpdateDto.getProfileImage());
-        admin.setPhoneNumber(adminUpdateDto.getPhoneNumber());
-
-        adminRepository.save(admin);
-    }
-
-    private Instructor findInstructorById(Long id) {
-        return instructorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found.", HttpStatus.NOT_FOUND));
-    }
-    private Admin findAdminById(Long id) {
-        return adminRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Admin not found.", HttpStatus.NOT_FOUND));
-    }
 
     @Override
     public User findByEmail(String email) {
@@ -205,9 +154,4 @@ public class AuthService implements IAuthService {
     }
 
 
-
-    private Student findStudentById(Long id) {
-        return studentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found.", HttpStatus.NOT_FOUND));
-    }
 }

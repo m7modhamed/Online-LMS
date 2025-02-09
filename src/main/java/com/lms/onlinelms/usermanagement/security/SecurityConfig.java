@@ -46,16 +46,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/login", "/register/**" ,"/verifyEmail/**","/resetPassword/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/verifyEmail/**" , "/forgot-password-request/**" , "/courses" ).permitAll()
                         .requestMatchers(HttpMethod.POST,"/courses" , "/courses/*/sections" , "/lessons/*/media" , "sections/*/lessons").hasRole("INSTRUCTOR")
-                        .requestMatchers(HttpMethod.GET, "/categories","/courses/*/publishRequest" , "/instructor/*/courses","/instructor/*/courses/*" , "/courses/*/archive" , "/instructor/*/courses/info").hasRole("INSTRUCTOR")
-                        .requestMatchers(HttpMethod.PUT , "/instructor/*/update").hasRole("INSTRUCTOR")
+                        .requestMatchers(HttpMethod.GET, "/categories","/courses/*/publishRequest" , "/instructor/*/courses","/instructor/*/courses/*" , "/courses/*/archive" , "/instructor/*/courses/info" , "/instructor/*").hasRole("INSTRUCTOR")
+                        .requestMatchers(HttpMethod.PUT , "/instructors/*/update").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.DELETE , "/courses/*").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.POST,"/categories").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT,"/admin/*/update").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/admins/*/update").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "courses/*/publish" , "/review/courses/**" , "/admin/courses" , "/admin/courses/info").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/students/*/courses/**" , "/courses/*" , "/students/*/lessons/*").hasRole("STUDENT")
                         .requestMatchers(HttpMethod.POST , "/students/*/courses/*/enroll").hasRole("STUDENT")
-                        .requestMatchers(HttpMethod.PUT , "/student/*/update").hasRole("STUDENT")
-
+                        .requestMatchers(HttpMethod.PUT , "/students/*/update").hasRole("STUDENT")
                         .anyRequest().authenticated());
 
         return http.build();

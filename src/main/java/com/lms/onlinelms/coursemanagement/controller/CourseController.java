@@ -59,14 +59,6 @@ public class CourseController {
         return ResponseEntity.ok(courseInfoDto);
     }
 
-/*    @GetMapping("/courses/{courseId}")
-    public ResponseEntity<CourseResponseDto> getCourse(@PathVariable Long courseId){
-        Course course= courseService.getPublishedCourseById(courseId);
-
-        CourseResponseDto courseInfoDto=courseMapper.toCourseResponseDto(course);
-
-        return ResponseEntity.ok(courseInfoDto);
-    }*/
 
     @GetMapping("/admin/courses")
     public ResponseEntity<List<AdminCourseInfoDto>> getAllCoursesForAdmin(){

@@ -18,9 +18,4 @@ public interface IAuthService {
 
     String resetPassword(String token, String password);
 
-    void updateStudent(StudentUpdateDto studentUpdateDto, Long studentId);
-
-    void updateInstructor(InstructorUpdateDto instructorUpdateDto, Long instructorId);
-
-    void updateAdmin(AdminUpdateDto adminUpdateDto, Long adminId);
 }
