@@ -37,9 +37,9 @@ public class UserAuthenticationProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(User user) {
+    public String createAccessToken(User user) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 36000000); // 10 hours
+        Date validity = new Date(now.getTime() + 36000000); // 10 hours 36000000
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 

@@ -1,8 +1,6 @@
 package com.lms.onlinelms.usermanagement.service.interfaces;
 
-import com.lms.onlinelms.usermanagement.dto.InstructorSignupDto;
-import com.lms.onlinelms.usermanagement.dto.LoginRequestDto;
-import com.lms.onlinelms.usermanagement.dto.StudentSignupDto;
+import com.lms.onlinelms.usermanagement.dto.*;
 import com.lms.onlinelms.usermanagement.model.Instructor;
 import com.lms.onlinelms.usermanagement.model.Student;
 import com.lms.onlinelms.usermanagement.model.User;
@@ -19,4 +17,10 @@ public interface IAuthService {
     void resetPasswordRequest(User user, String originUrl);
 
     String resetPassword(String token, String password);
+
+    void updateStudent(StudentUpdateDto studentUpdateDto, Long studentId);
+
+    void updateInstructor(InstructorUpdateDto instructorUpdateDto, Long instructorId);
+
+    void updateAdmin(AdminUpdateDto adminUpdateDto, Long adminId);
 }

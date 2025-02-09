@@ -34,4 +34,5 @@ public interface IInstructorMapper {
         instructor.setIsBlocked(false);
         return instructor;
     }
+
 }

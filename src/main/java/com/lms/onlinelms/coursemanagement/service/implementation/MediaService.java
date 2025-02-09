@@ -32,7 +32,7 @@ public class MediaService implements IMediaService {
     private final ILessonService lessonService;
     private final VideoRepository videoRepository;
     private final ICourseService courseService;
-    private static final String UPLOAD_DIR = "D:/My Projects/React Projects/sakai-react/public";
+    private static final String UPLOAD_DIR = "D:/Projects/Online-LMS-Client-nextjs/public";
     private final FileResourceRepository fileResourceRepository;
     private final LessonRepository lessonRepository;
     private final IFileResourceService fileResourceService;

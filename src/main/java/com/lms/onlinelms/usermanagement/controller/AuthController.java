@@ -1,9 +1,6 @@
 package com.lms.onlinelms.usermanagement.controller;
 
-import com.lms.onlinelms.usermanagement.dto.InstructorSignupDto;
-import com.lms.onlinelms.usermanagement.dto.LoginRequestDto;
-import com.lms.onlinelms.usermanagement.dto.LoginResponseDto;
-import com.lms.onlinelms.usermanagement.dto.StudentSignupDto;
+import com.lms.onlinelms.usermanagement.dto.*;
 import com.lms.onlinelms.usermanagement.model.User;
 import com.lms.onlinelms.usermanagement.security.UserAuthenticationProvider;
 import com.lms.onlinelms.usermanagement.service.interfaces.IAuthService;
@@ -33,7 +30,7 @@ public class AuthController {
         loginResponseDto.setStatus("success");
         loginResponseDto.setMessage("Login successful");
 
-        String token=userAuthenticationProvider.createToken(user);
+        String token=userAuthenticationProvider.createAccessToken(user);
 
         loginResponseDto.setToken(token);
         return ResponseEntity.ok(loginResponseDto);
@@ -77,6 +74,28 @@ public class AuthController {
         String resetResult = authService.resetPassword(token, password);
         HttpStatus status = resetResult.equals("Password reset successfully") ? HttpStatus.ACCEPTED : HttpStatus.NOT_FOUND;
         return ResponseEntity.status(status).body(resetResult);
+    }
+
+
+    @PutMapping("/student/{studentId}/update")
+    public ResponseEntity<String> updateStudent(@RequestBody @Valid StudentUpdateDto studentUpdateDto, @PathVariable Long studentId) {
+         authService.updateStudent(studentUpdateDto, studentId);
+
+        return ResponseEntity.ok("Student Profile updated successfully");
+    }
+
+    @PutMapping("/instructor/{instructorId}/update")
+    public ResponseEntity<String> updateInstructor(@RequestBody @Valid InstructorUpdateDto instructorUpdateDto, @PathVariable Long instructorId) {
+         authService.updateInstructor(instructorUpdateDto , instructorId);
+
+        return ResponseEntity.ok("Instructor Profile updated successfully");
+    }
+
+    @PutMapping("/admin/{adminId}/update")
+    public ResponseEntity<String> updateAdmin(@RequestBody @Valid AdminUpdateDto adminUpdateDto, @PathVariable Long adminId) {
+         authService.updateAdmin(adminUpdateDto , adminId);
+
+        return ResponseEntity.ok("Admin Profile updated successfully");
     }
 
 }
