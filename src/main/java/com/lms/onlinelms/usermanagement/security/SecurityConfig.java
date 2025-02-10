@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/categories").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/admins/*/update").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "courses/*/publish" , "/review/courses/**" , "/admin/courses" , "/admin/courses/info").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET,"/students/*/courses/**" , "/courses/*" , "/students/*/lessons/*").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET,"/students/*/courses/**" , "/courses/*" , "/students/*/lessons/*" , "/students/*").hasRole("STUDENT")
                         .requestMatchers(HttpMethod.POST , "/students/*/courses/*/enroll").hasRole("STUDENT")
                         .requestMatchers(HttpMethod.PUT , "/students/*/update").hasRole("STUDENT")
                         .anyRequest().authenticated());

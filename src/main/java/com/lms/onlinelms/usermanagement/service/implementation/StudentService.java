@@ -9,6 +9,8 @@ import com.lms.onlinelms.usermanagement.repository.StudentRepository;
 import com.lms.onlinelms.usermanagement.service.interfaces.IStudentService;
 import com.lms.onlinelms.usermanagement.service.interfaces.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,9 @@ public class StudentService implements IStudentService {
     private final StudentRepository studentRepository;
     private final IUserService userService;
 
+    @Lazy
+    @Autowired
+    private  IMediaService mediaService;
 
 
     private Student findStudentById(Long id) {
@@ -35,7 +40,7 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public void updateStudent(StudentUpdateDto studentUpdateDto, MultipartFile profileImage, Long studentId) {
+    public Student updateStudent(StudentUpdateDto studentUpdateDto, MultipartFile profileImage, Long studentId) {
         Student student= findStudentById(studentId);
 
         userService.checkIfUserIdCorrect(studentId);
@@ -45,14 +50,23 @@ public class StudentService implements IStudentService {
         student.setProfileImage(studentUpdateDto.getProfileImage());
         student.setPhoneNumber(studentUpdateDto.getPhoneNumber());
 
-    /*    String imageUrl = mediaService.saveFile(profileImage , "/ProfileImages");
+        String imageUrl = mediaService.saveFile(profileImage , "/ProfileImages");
         Image image= new Image();
         image.setName(profileImage.getOriginalFilename());
         image.setType(profileImage.getContentType());
         image.setImageUrl(imageUrl);
         student.setProfileImage(image);
-*/
 
-        studentRepository.save(student);
+        return studentRepository.save(student);
+
+    }
+
+    @Override
+    public Student getStudentInfoById(Long studentId) {
+        Student student = findStudentById(studentId);
+
+        userService.checkIfUserIdCorrect(studentId);
+
+        return student;
     }
 }

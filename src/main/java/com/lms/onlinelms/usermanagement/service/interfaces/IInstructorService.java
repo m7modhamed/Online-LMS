@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface IInstructorService {
 
-    void updateInstructor(InstructorUpdateDto instructorUpdateDto, MultipartFile profileImage, Long instructorId);
+    Instructor updateInstructor(InstructorUpdateDto instructorUpdateDto, MultipartFile profileImage, Long instructorId);
 
     Instructor getInstructorInfoById(Long instructorId);
 }

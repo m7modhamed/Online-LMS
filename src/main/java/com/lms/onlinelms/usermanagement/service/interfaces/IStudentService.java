@@ -8,5 +8,7 @@ public interface IStudentService {
 
     void saveStudent(Student student);
 
-    void updateStudent(StudentUpdateDto studentUpdateDto, MultipartFile profileImage, Long studentId);
+    Student updateStudent(StudentUpdateDto studentUpdateDto, MultipartFile profileImage, Long studentId);
+
+    Student getStudentInfoById(Long studentId);
 }

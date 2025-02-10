@@ -25,7 +25,7 @@ public class InstructorService implements IInstructorService {
     private final IMediaService mediaService;
 
     @Override
-    public void updateInstructor(InstructorUpdateDto instructorUpdateDto, MultipartFile profileImage, Long instructorId) {
+    public Instructor updateInstructor(InstructorUpdateDto instructorUpdateDto, MultipartFile profileImage, Long instructorId) {
         Instructor instructor = findInstructorById(instructorId);
         userService.checkIfUserIdCorrect(instructorId);
 
@@ -49,7 +49,7 @@ public class InstructorService implements IInstructorService {
         image.setImageUrl(imageUrl);
         instructor.setProfileImage(image);
 
-        instructorRepository.save(instructor);
+        return instructorRepository.save(instructor);
     }
 
 

@@ -86,7 +86,7 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public Course getEnrolledCourseForStudentById(Long courseId , Long studentId) {
+    public Course getCourseForStudentById(Long courseId , Long studentId) {
         // check user id is same with user that logged by token
         userService.checkIfUserIdCorrect(studentId);
 

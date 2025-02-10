@@ -31,6 +31,7 @@ public class InstructorUpdateDto {
     @Size(min = 3, max = 25)
     private String specialization;
 
+    private String email;
     @NotBlank
     @Size(min = 25, max = 500)
     private String aboutMe;

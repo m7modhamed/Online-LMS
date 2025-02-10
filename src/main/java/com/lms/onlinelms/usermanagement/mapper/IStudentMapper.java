@@ -1,6 +1,7 @@
 package com.lms.onlinelms.usermanagement.mapper;
 
 import com.lms.onlinelms.usermanagement.dto.StudentSignupDto;
+import com.lms.onlinelms.usermanagement.dto.StudentUpdateDto;
 import com.lms.onlinelms.usermanagement.model.Student;
 import org.mapstruct.Mapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,4 +30,5 @@ public interface IStudentMapper {
         return student;
     }
 
+    StudentUpdateDto toStudentDto(Student student);
 }

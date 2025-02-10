@@ -22,6 +22,8 @@ public class StudentUpdateDto {
     @NotBlank
     private String lastName;
 
+    private String email;
+
     private Image profileImage;
 
     @Size(min = 3, max = 15)

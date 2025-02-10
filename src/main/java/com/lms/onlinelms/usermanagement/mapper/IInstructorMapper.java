@@ -2,6 +2,7 @@ package com.lms.onlinelms.usermanagement.mapper;
 
 import com.lms.onlinelms.usermanagement.dto.InstructorDto;
 import com.lms.onlinelms.usermanagement.dto.InstructorSignupDto;
+import com.lms.onlinelms.usermanagement.dto.InstructorUpdateDto;
 import com.lms.onlinelms.usermanagement.model.Instructor;
 import org.mapstruct.Mapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,4 +38,6 @@ public interface IInstructorMapper {
     }
 
     InstructorDto toInstructorDto(Instructor instructor);
+
+    InstructorUpdateDto toInstructorUpdateDto(Instructor instructor);
 }

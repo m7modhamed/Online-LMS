@@ -20,7 +20,7 @@ public interface ICourseService {
 
     List<Course> getAllPublishedCourses();
 
-    Course getEnrolledCourseForStudentById(Long courseId , Long studentId);
+    Course getCourseForStudentById(Long courseId , Long studentId);
 
     Course publishCourse(Long courseId);
 

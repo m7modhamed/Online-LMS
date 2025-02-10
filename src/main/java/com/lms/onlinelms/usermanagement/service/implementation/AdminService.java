@@ -26,7 +26,7 @@ private final AdminRepository adminRepository;
 
 
     @Override
-    public void updateAdmin(AdminUpdateDto adminUpdateDto, MultipartFile profileImage, Long adminId) {
+    public Admin updateAdmin(AdminUpdateDto adminUpdateDto, MultipartFile profileImage, Long adminId) {
 
         Admin admin = findAdminById(adminId);
 
@@ -45,7 +45,15 @@ private final AdminRepository adminRepository;
         image.setImageUrl(imageUrl);
         admin.setProfileImage(image);
 
-        adminRepository.save(admin);
+        return adminRepository.save(admin);
+    }
+
+    @Override
+    public Admin getAdminInfoById(Long adminId) {
+        Admin admin = findAdminById(adminId);
+        userService.checkIfUserIdCorrect(adminId);
+
+        return admin;
     }
 
 

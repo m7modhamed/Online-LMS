@@ -101,9 +101,9 @@ public class CourseController {
     }
 
     @GetMapping("/students/{studentId}/courses/{courseId}")
-    public ResponseEntity<?> getEnrolledCourseForStudentById(@PathVariable Long courseId
+    public ResponseEntity<?> getCourseForStudentById(@PathVariable Long courseId
             , @PathVariable Long studentId){
-        Course course= courseService.getEnrolledCourseForStudentById(courseId , studentId);
+        Course course= courseService.getCourseForStudentById(courseId , studentId);
 
         CourseResponseDto courseResponseDto=courseMapper.toCourseResponseDto(course);
 
