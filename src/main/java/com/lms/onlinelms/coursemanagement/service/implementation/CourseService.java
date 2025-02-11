@@ -218,6 +218,7 @@ public class CourseService implements ICourseService {
         Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
                 .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
                 .and(CourseSpecification.hasCourseStatus(CourseStatus.PUBLISHED))
+                .and(CourseSpecification.hasLanguage(criteria.getLanguage()))
                 .and(CourseSpecification.hasCategory(criteria.getCategory()))
                 .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));
 
@@ -232,6 +233,7 @@ public class CourseService implements ICourseService {
         Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
                 .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
                 .and(CourseSpecification.hasCategory(criteria.getCategory()))
+                .and(CourseSpecification.hasLanguage(criteria.getLanguage()))
                 .and(CourseSpecification.hasCourseStatus(courseStatus))
 
                 .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));
@@ -246,6 +248,7 @@ public class CourseService implements ICourseService {
         Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
                 .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
                 .and(CourseSpecification.hasCategory(criteria.getCategory()))
+                .and(CourseSpecification.hasLanguage(criteria.getLanguage()))
                 .and(CourseSpecification.hasNotCourseStatus(CourseStatus.DELETED))
                 .and(CourseSpecification.hasInstructorId(instructorId))
                 .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));

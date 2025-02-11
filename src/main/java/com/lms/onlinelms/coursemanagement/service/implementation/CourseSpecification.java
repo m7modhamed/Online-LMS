@@ -30,6 +30,15 @@ public class CourseSpecification {
             return criteriaBuilder.like(root.get("name"), "%" + keySearch + "%");
         };
     }
+    public static Specification<Course> hasLanguage(String language) {
+        return (root, query, criteriaBuilder) -> {
+            if (language == null || language.isBlank()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            return criteriaBuilder.equal(root.get("language"),  language );
+        };
+    }
 
     public static Specification<Course> hasInstructorId(Long instructorId) {
         return (root, query, criteriaBuilder) -> {
