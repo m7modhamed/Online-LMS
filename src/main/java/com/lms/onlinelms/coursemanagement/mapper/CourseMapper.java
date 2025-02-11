@@ -16,6 +16,7 @@ public interface CourseMapper {
 
     CourseResponseDto toCourseResponseDto(Course course);
 
+    CourseInfoDto toCourseInfoDto(Course courses);
     List<CourseInfoDto> toCourseInfoDto(List<Course> courses);
 
     @AfterMapping
@@ -42,6 +43,7 @@ public interface CourseMapper {
 
 
     List<AdminCourseInfoDto> toAdminCourseInfoDto(List<Course> courses);
+    AdminCourseInfoDto toAdminCourseInfoDto(Course courses);
 
     List<DashboardInfoDto> toDashboardInfoDto(List<Course> courses);
 }

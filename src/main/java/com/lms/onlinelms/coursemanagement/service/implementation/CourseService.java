@@ -4,6 +4,7 @@ import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.common.exceptions.ResourceNotFoundException;
 import com.lms.onlinelms.common.utility.UserUtil;
 import com.lms.onlinelms.coursemanagement.dto.CourseRequestDto;
+import com.lms.onlinelms.coursemanagement.dto.CourseSearchCriteria;
 import com.lms.onlinelms.coursemanagement.dto.DashboardInfoDto;
 import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
 import com.lms.onlinelms.coursemanagement.exception.CourseAccessException;
@@ -21,6 +22,9 @@ import com.lms.onlinelms.usermanagement.service.interfaces.IStudentService;
 import com.lms.onlinelms.usermanagement.service.interfaces.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -206,6 +210,47 @@ public class CourseService implements ICourseService {
 
         return getDashboardInfoDto(CoursesCount, 0, reviewCoursesCount, publishCoursesCount, archivedCoursesCount, deletedCoursesCount, draftCoursesCount);
     }
+
+    //pageable
+    @Override
+    public Page<Course> getPublishedCourses(CourseSearchCriteria criteria, PageRequest pageRequest) {
+
+        Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
+                .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
+                .and(CourseSpecification.hasCourseStatus(CourseStatus.PUBLISHED))
+                .and(CourseSpecification.hasCategory(criteria.getCategory()))
+                .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));
+
+        return courseRepository.findAll(spec, pageRequest);
+    }
+
+    @Override
+    public Page<Course> getCoursesForAdmin(CourseSearchCriteria criteria, PageRequest pageRequest) {
+
+        String strCourseStatus = criteria.getStatus();
+        CourseStatus courseStatus = !strCourseStatus.isBlank() ? CourseStatus.valueOf(strCourseStatus) : null;
+        Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
+                .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
+                .and(CourseSpecification.hasCategory(criteria.getCategory()))
+                .and(CourseSpecification.hasCourseStatus(courseStatus))
+
+                .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));
+
+        return courseRepository.findAll(spec, pageRequest);
+    }
+
+    @Override
+    public Page<Course> getCoursesForInstructor(CourseSearchCriteria criteria, Long instructorId, PageRequest pageRequest) {
+        userService.checkIfUserIdCorrect(instructorId);
+
+        Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
+                .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
+                .and(CourseSpecification.hasCategory(criteria.getCategory()))
+                .and(CourseSpecification.hasNotCourseStatus(CourseStatus.DELETED))
+                .and(CourseSpecification.hasInstructorId(instructorId))
+                .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));
+
+        return courseRepository.findAll(spec, pageRequest);    }
 
     private DashboardInfoDto getDashboardInfoDto(Long coursesCount, int lastWeekCoursesCount, int reviewCoursesCount, int publishCoursesCount, int archivedCoursesCount, int deletedCoursesCount, int draftCoursesCount) {
         DashboardInfoDto dashboardInfoDto=new DashboardInfoDto();

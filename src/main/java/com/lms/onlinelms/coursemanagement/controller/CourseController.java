@@ -9,6 +9,9 @@ import com.lms.onlinelms.coursemanagement.service.interfaces.ICourseService;
 import com.lms.onlinelms.usermanagement.model.Instructor;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +62,31 @@ public class CourseController {
         return ResponseEntity.ok(courseInfoDto);
     }
 
+    @PostMapping("/courses/all")
+    public ResponseEntity<Page<CourseInfoDto>> getPublishedCourses(
+            @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "sortBy", required = false) String[] sortBy,
+            @RequestParam(value = "sortDirection", required = false, defaultValue = "ASC") String sortDirection,
+            @RequestBody CourseSearchCriteria searchCriteria
+    ) {
+
+        Sort.Direction direction = Sort.Direction.fromString(sortDirection.toUpperCase());
+
+        if (sortBy == null || sortBy.length == 0) {
+            sortBy = new String[] { "createdAt" };
+        }
+        Sort sort = Sort.by(direction, sortBy);
+
+        PageRequest pageRequest = PageRequest.of(offset, pageSize, sort);
+
+        Page<Course> coursePage = courseService.getPublishedCourses(searchCriteria, pageRequest);
+
+        Page<CourseInfoDto> responseAuctionPage = coursePage.map(courseMapper::toCourseInfoDto);
+
+        return ResponseEntity.ok(responseAuctionPage);
+    }
+
 
     @GetMapping("/admin/courses")
     public ResponseEntity<List<AdminCourseInfoDto>> getAllCoursesForAdmin(){
@@ -67,6 +95,32 @@ public class CourseController {
         List<AdminCourseInfoDto> courseInfoDto=courseMapper.toAdminCourseInfoDto(courses);
 
         return ResponseEntity.ok(courseInfoDto);
+    }
+
+    // api for admin return page of course
+    @PostMapping("/admin/courses")
+    public ResponseEntity<Page<AdminCourseInfoDto>> getCoursesForAdmin(
+            @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "sortBy", required = false) String[] sortBy,
+            @RequestParam(value = "sortDirection", required = false, defaultValue = "ASC") String sortDirection,
+            @RequestBody CourseSearchCriteria searchCriteria
+    ) {
+
+        Sort.Direction direction = Sort.Direction.fromString(sortDirection.toUpperCase());
+
+        if (sortBy == null || sortBy.length == 0) {
+            sortBy = new String[] { "createdAt" };
+        }
+        Sort sort = Sort.by(direction, sortBy);
+
+        PageRequest pageRequest = PageRequest.of(offset, pageSize, sort);
+
+        Page<Course> coursePage = courseService.getCoursesForAdmin(searchCriteria, pageRequest);
+
+        Page<AdminCourseInfoDto> adminCourseInfoDtos = coursePage.map(courseMapper::toAdminCourseInfoDto);
+
+        return ResponseEntity.ok(adminCourseInfoDtos);
     }
 
     @GetMapping("/admin/courses/info")
@@ -100,6 +154,7 @@ public class CourseController {
         return ResponseEntity.ok(courseResponseDto);
     }
 
+
     @GetMapping("/students/{studentId}/courses/{courseId}")
     public ResponseEntity<?> getCourseForStudentById(@PathVariable Long courseId
             , @PathVariable Long studentId){
@@ -122,6 +177,34 @@ public class CourseController {
         List<Course> courseList= courseService.getInstructorCourses(instructor);
 
         return ResponseEntity.ok(courseMapper.toCourseInfoDto(courseList));
+    }
+
+
+    // api for instructor return page of course
+    @PostMapping("/instructor/{instructorId}/courses")
+    public ResponseEntity<Page<CourseInfoDto>> getCoursesForInstructor(
+            @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "sortBy", required = false) String[] sortBy,
+            @RequestParam(value = "sortDirection", required = false, defaultValue = "ASC") String sortDirection,
+            @PathVariable long instructorId,
+            @RequestBody CourseSearchCriteria searchCriteria
+    ) {
+
+        Sort.Direction direction = Sort.Direction.fromString(sortDirection.toUpperCase());
+
+        if (sortBy == null || sortBy.length == 0) {
+            sortBy = new String[] { "createdAt" };
+        }
+        Sort sort = Sort.by(direction, sortBy);
+
+        PageRequest pageRequest = PageRequest.of(offset, pageSize, sort);
+
+        Page<Course> coursePage = courseService.getCoursesForInstructor(searchCriteria,instructorId, pageRequest);
+
+        Page<CourseInfoDto> instructorCourseInfoDtos = coursePage.map(courseMapper::toCourseInfoDto);
+
+        return ResponseEntity.ok(instructorCourseInfoDtos);
     }
 
     @GetMapping("/instructor/{instructorId}/courses/{courseId}")

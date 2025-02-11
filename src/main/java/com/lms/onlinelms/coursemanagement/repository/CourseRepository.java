@@ -4,7 +4,11 @@ import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.usermanagement.model.Instructor;
 import com.lms.onlinelms.usermanagement.model.Student;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface CourseRepository extends JpaRepository<Course, Long> {
+public interface CourseRepository extends JpaRepository<Course, Long> , JpaSpecificationExecutor<Course> {
 
     int countByStatus(CourseStatus status);
     int countByCreatedAtIsAfter(LocalDateTime createdAt);
@@ -41,6 +45,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT count(c) FROM Course c JOIN c.enrolledStudents s WHERE s.id = :studentId AND c.status = :courseStatus " )
     int countByStatusAndStudentId(@Param("courseStatus") CourseStatus courseStatus,@Param("studentId") Long studentId);
+
 
 
 /*
