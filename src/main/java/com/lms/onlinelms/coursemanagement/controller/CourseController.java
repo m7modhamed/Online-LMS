@@ -53,15 +53,6 @@ public class CourseController {
        return ResponseEntity.ok("the course publish has been successfully.");
     }
 
-    @GetMapping("/courses")
-    public ResponseEntity<List<CourseInfoDto>> getAllCourses(){
-        List<Course> courses= courseService.getAllPublishedCourses();
-
-        List<CourseInfoDto> courseInfoDto=courseMapper.toCourseInfoDto(courses);
-
-        return ResponseEntity.ok(courseInfoDto);
-    }
-
     @PostMapping("/courses/all")
     public ResponseEntity<Page<CourseInfoDto>> getPublishedCourses(
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
@@ -86,17 +77,7 @@ public class CourseController {
 
         return ResponseEntity.ok(responseAuctionPage);
     }
-
-
-    @GetMapping("/admin/courses")
-    public ResponseEntity<List<AdminCourseInfoDto>> getAllCoursesForAdmin(){
-        List<Course> courses= courseService.getAllCoursesForAdmin();
-
-        List<AdminCourseInfoDto> courseInfoDto=courseMapper.toAdminCourseInfoDto(courses);
-
-        return ResponseEntity.ok(courseInfoDto);
-    }
-
+    
     // api for admin return page of course
     @PostMapping("/admin/courses")
     public ResponseEntity<Page<AdminCourseInfoDto>> getCoursesForAdmin(
@@ -167,18 +148,6 @@ public class CourseController {
         }
         return ResponseEntity.ok(courseResponseDto);
     }
-
-    @GetMapping("/instructor/{instructorId}/courses")
-    public ResponseEntity<List<CourseInfoDto>> getInstructorCourses(@PathVariable long instructorId){
-        Instructor instructor =(Instructor) UserUtil.getCurrentUser();
-        if(instructorId != instructor.getId()){
-            throw new AppException("the instructor id is not correct ,please try again.", HttpStatus.BAD_REQUEST);
-        }
-        List<Course> courseList= courseService.getInstructorCourses(instructor);
-
-        return ResponseEntity.ok(courseMapper.toCourseInfoDto(courseList));
-    }
-
 
     // api for instructor return page of course
     @PostMapping("/instructor/{instructorId}/courses")

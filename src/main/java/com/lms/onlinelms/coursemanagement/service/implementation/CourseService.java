@@ -84,12 +84,6 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public List<Course> getAllPublishedCourses() {
-
-        return courseRepository.findAllByStatus(CourseStatus.PUBLISHED);
-    }
-
-    @Override
     public Course getCourseForStudentById(Long courseId , Long studentId) {
         // check user id is same with user that logged by token
         userService.checkIfUserIdCorrect(studentId);
@@ -107,11 +101,6 @@ public class CourseService implements ICourseService {
         return courseRepository.save(course);
     }
 
-    @Override
-    public List<Course> getInstructorCourses(Instructor instructor) {
-
-        return courseRepository.findAllByInstructorAndStatusNot(instructor ,CourseStatus.DELETED);
-    }
 
     @Override
     public Course getInstructorCourse(Instructor instructor, long courseId) {
@@ -144,15 +133,6 @@ public class CourseService implements ICourseService {
         return courseRepository.save(course);
     }
 
-    @Override
-    public List<Course> getAllCoursesForAdmin() {
-        return courseRepository.findAll();
-    }
-
-    @Override
-    public Course getPublishedCourseById(Long courseId) {
-        return courseRepository.findByStatusAndId(CourseStatus.PUBLISHED,courseId);
-    }
 
     @Override
     public boolean isStudentEnrolledIntoCourse(Long studentId, Long courseId) {
