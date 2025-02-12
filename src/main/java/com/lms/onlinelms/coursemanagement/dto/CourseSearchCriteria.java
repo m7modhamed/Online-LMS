@@ -15,7 +15,7 @@ public class CourseSearchCriteria {
 
     private String language;
 
-    private String status;
+    private List<String> status;
 
     private List<String> category;
 

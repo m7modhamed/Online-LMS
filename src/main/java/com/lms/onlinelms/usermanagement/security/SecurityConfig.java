@@ -46,7 +46,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/login", "/register/**" ,"/verifyEmail/**","/resetPassword/**" , "/courses/all").permitAll()
                         .requestMatchers(HttpMethod.GET,"/verifyEmail/**" , "/forgot-password-request/**"  ).permitAll()
                         .requestMatchers(HttpMethod.POST,"/courses" , "/courses/*/sections" , "/lessons/*/media" , "sections/*/lessons" , "/instructor/*/courses").hasRole("INSTRUCTOR")
-                        .requestMatchers(HttpMethod.GET, "/categories","/courses/*/publishRequest" ,"/instructor/*/courses/*" , "/courses/*/archive" , "/instructor/*/courses/info" , "/instructor/*").hasRole("INSTRUCTOR")
+                        .requestMatchers(HttpMethod.GET,"/courses/*/publishRequest" ,"/instructor/*/courses/*" , "/courses/*/archive" , "/instructor/*/courses/info" , "/instructor/*").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.PUT , "/instructors/*/update").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.DELETE , "/courses/*").hasRole("INSTRUCTOR")
                         .requestMatchers(HttpMethod.POST,"/categories").hasRole("ADMIN")

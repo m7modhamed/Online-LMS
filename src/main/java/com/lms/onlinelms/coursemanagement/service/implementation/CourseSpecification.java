@@ -80,15 +80,21 @@ public class CourseSpecification {
     }
 
 
-    public static Specification<Course> hasCourseStatus(CourseStatus courseStatus) {
+
+    public static Specification<Course> hasCourseStatus(List<CourseStatus> courseStatus) {
         return (root, query, criteriaBuilder) -> {
-            if (courseStatus == null) {
+            if (courseStatus == null || courseStatus.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
 
-            return criteriaBuilder.equal(root.get("status"),courseStatus);
+            CriteriaBuilder.In<CourseStatus> inClause = criteriaBuilder.in(root.get("status"));
+            for (CourseStatus status : courseStatus) {
+                inClause.value(status);
+            }
+            return inClause;
         };
     }
+
     public static Specification<Course> hasNotCourseStatus(CourseStatus courseStatus) {
         return (root, query, criteriaBuilder) -> {
             if (courseStatus == null) {

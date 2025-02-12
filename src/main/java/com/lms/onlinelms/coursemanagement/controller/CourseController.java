@@ -77,7 +77,7 @@ public class CourseController {
 
         return ResponseEntity.ok(responseAuctionPage);
     }
-    
+
     // api for admin return page of course
     @PostMapping("/admin/courses")
     public ResponseEntity<Page<AdminCourseInfoDto>> getCoursesForAdmin(
@@ -196,7 +196,6 @@ public class CourseController {
 
     @GetMapping("/review/courses")
     public ResponseEntity<List<AdminCourseInfoDto>> getCoursesForReviewing() {
-
 
         List<Course> courses= courseService.getCoursesForReviewing();
 

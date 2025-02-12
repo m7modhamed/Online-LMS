@@ -29,8 +29,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -197,7 +197,7 @@ public class CourseService implements ICourseService {
 
         Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
                 .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
-                .and(CourseSpecification.hasCourseStatus(CourseStatus.PUBLISHED))
+                .and(CourseSpecification.hasCourseStatus(List.of(CourseStatus.PUBLISHED)))
                 .and(CourseSpecification.hasLanguage(criteria.getLanguage()))
                 .and(CourseSpecification.hasCategory(criteria.getCategory()))
                 .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));
@@ -208,14 +208,17 @@ public class CourseService implements ICourseService {
     @Override
     public Page<Course> getCoursesForAdmin(CourseSearchCriteria criteria, PageRequest pageRequest) {
 
-        String strCourseStatus = criteria.getStatus();
-        CourseStatus courseStatus = !strCourseStatus.isBlank() ? CourseStatus.valueOf(strCourseStatus) : null;
+        List<String> strCourseStatus = criteria.getStatus();
+        List<CourseStatus> courseStatus=new ArrayList<>();
+        for(String str : strCourseStatus){
+        courseStatus.add(!str.isBlank() ? CourseStatus.valueOf(str) : null);
+
+        }
         Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
                 .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
                 .and(CourseSpecification.hasCategory(criteria.getCategory()))
                 .and(CourseSpecification.hasLanguage(criteria.getLanguage()))
                 .and(CourseSpecification.hasCourseStatus(courseStatus))
-
                 .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));
 
         return courseRepository.findAll(spec, pageRequest);
