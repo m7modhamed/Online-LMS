@@ -51,7 +51,7 @@ public class Course {
     private CoverImage coverImage;
 
 
-    @Column(nullable = true)
+    @Column
     private double duration;
 
 

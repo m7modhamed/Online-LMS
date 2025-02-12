@@ -1,6 +1,7 @@
 package com.lms.onlinelms.coursemanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
 import com.lms.onlinelms.coursemanagement.model.CoverImage;
 import com.lms.onlinelms.usermanagement.dto.InstructorDto;
 import lombok.Data;
@@ -28,5 +29,7 @@ public class CourseInfoDto {
     private CoverImage coverImage;
 
     private double duration;
+
+    private CourseStatus status;
 
 }

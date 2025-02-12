@@ -4,22 +4,13 @@ import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
 import com.lms.onlinelms.coursemanagement.model.Category;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.usermanagement.model.Instructor;
+import com.lms.onlinelms.usermanagement.model.Student;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CourseSpecification {
-
-
-    public static Specification<Course> hasPublished(String status) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("status") , status);
-    }
-
 
     public static Specification<Course> hasName(String keySearch) {
         return (root, query, criteriaBuilder) -> {
@@ -107,26 +98,6 @@ public class CourseSpecification {
 
 
 
-    public static Specification<Course> hasDateRange(LocalDateTime fromDateTime, LocalDateTime toDateTime) {
-        return (root, query, criteriaBuilder) -> {
-
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (fromDateTime != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), fromDateTime));
-            }
-
-
-            if (toDateTime != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), toDateTime));
-            }
-
-
-            return predicates.isEmpty() ? criteriaBuilder.conjunction() : criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-    }
-
-
     public static Specification<Course> hasDurationBetween(double min, double max) {
         return (root, query, criteriaBuilder) -> {
 
@@ -147,6 +118,16 @@ public class CourseSpecification {
     }
 
 
+    public static Specification<Course> hasStudentId(Long studentId) {
+        return (root, query, criteriaBuilder) -> {
+            if (studentId == null || studentId <= 0) {
+                return criteriaBuilder.conjunction();
+            }
+
+            Join<Course, Student> studentJoin = root.join("enrolledStudents");
+            return criteriaBuilder.equal(studentJoin.get("id"), studentId);
+        };
+    }
 
 
 }

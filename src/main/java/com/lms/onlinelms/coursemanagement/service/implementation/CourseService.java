@@ -141,9 +141,17 @@ public class CourseService implements ICourseService {
         return student.getCourses().contains(findCourseById(courseId));
     }
 
+
     @Override
-    public List<Course> getEnrolledCoursesForStudent(Long studentId) {
-       return courseRepository.findAllByEnrolledStudentsId(studentId);
+    public Page<Course> getEnrolledCoursesForStudent(CourseSearchCriteria criteria, Long studentId, PageRequest pageRequest) {
+        Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
+                .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
+                .and(CourseSpecification.hasLanguage(criteria.getLanguage()))
+                .and(CourseSpecification.hasCategory(criteria.getCategory()))
+                .and(CourseSpecification.hasStudentId(studentId))
+                .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));
+
+        return courseRepository.findAll(spec, pageRequest);
     }
 
     @Override
@@ -228,10 +236,18 @@ public class CourseService implements ICourseService {
     public Page<Course> getCoursesForInstructor(CourseSearchCriteria criteria, Long instructorId, PageRequest pageRequest) {
         userService.checkIfUserIdCorrect(instructorId);
 
+        List<String> strCourseStatus = criteria.getStatus();
+        List<CourseStatus> courseStatus=new ArrayList<>();
+        for(String str : strCourseStatus){
+            courseStatus.add(!str.isBlank() ? CourseStatus.valueOf(str) : null);
+
+        }
+
         Specification<Course> spec= Specification.where(CourseSpecification.hasName(criteria.getSearchKey()))
                 .or(CourseSpecification.hasDescription(criteria.getSearchKey()))
                 .and(CourseSpecification.hasCategory(criteria.getCategory()))
                 .and(CourseSpecification.hasLanguage(criteria.getLanguage()))
+                .and(CourseSpecification.hasCourseStatus(courseStatus))
                 .and(CourseSpecification.hasNotCourseStatus(CourseStatus.DELETED))
                 .and(CourseSpecification.hasInstructorId(instructorId))
                 .and(CourseSpecification.hasDurationBetween((criteria.getMinDuration()), criteria.getMaxDuration()));

@@ -122,17 +122,30 @@ public class CourseController {
     }
 
 
-    @GetMapping("/students/{studentId}/courses")
-    public ResponseEntity<?> getEnrolledCoursesForStudent(@PathVariable Long studentId){
-        List<Course> course= courseService.getEnrolledCoursesForStudent(studentId);
+    @PostMapping("/students/{studentId}/courses")
+    public ResponseEntity<Page<CourseInfoDto>> getCoursesForStudent(
+            @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "sortBy", required = false) String[] sortBy,
+            @RequestParam(value = "sortDirection", required = false, defaultValue = "ASC") String sortDirection,
+            @PathVariable long studentId,
+            @RequestBody CourseSearchCriteria searchCriteria
+    ) {
 
-        List<CourseInfoDto> courseResponseDto=courseMapper.toCourseInfoDto(course);
+        Sort.Direction direction = Sort.Direction.fromString(sortDirection.toUpperCase());
 
-        if(courseResponseDto == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found");
+        if (sortBy == null || sortBy.length == 0) {
+            sortBy = new String[] { "createdAt" };
         }
+        Sort sort = Sort.by(direction, sortBy);
 
-        return ResponseEntity.ok(courseResponseDto);
+        PageRequest pageRequest = PageRequest.of(offset, pageSize, sort);
+
+        Page<Course> coursePage = courseService.getEnrolledCoursesForStudent(searchCriteria,studentId, pageRequest);
+
+        Page<CourseInfoDto> studentCourseInfoDtos = coursePage.map(courseMapper::toCourseInfoDto);
+
+        return ResponseEntity.ok(studentCourseInfoDtos);
     }
 
 

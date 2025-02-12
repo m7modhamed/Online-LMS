@@ -9,7 +9,6 @@ import com.lms.onlinelms.usermanagement.model.Instructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 public interface ICourseService {
@@ -47,7 +46,7 @@ public interface ICourseService {
 
     boolean isStudentEnrolledIntoCourse(Long studentId, Long courseId);
 
-    List<Course> getEnrolledCoursesForStudent(Long studentId);
+    Page<Course> getEnrolledCoursesForStudent(CourseSearchCriteria searchCriteria,Long studentId, PageRequest pageRequest);
 
     DashboardInfoDto getAdminDashboardInfo();
 
