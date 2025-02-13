@@ -122,6 +122,7 @@ public class CourseController {
     }
 
 
+
     @PostMapping("/students/{studentId}/courses")
     public ResponseEntity<Page<CourseInfoDto>> getCoursesForStudent(
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,

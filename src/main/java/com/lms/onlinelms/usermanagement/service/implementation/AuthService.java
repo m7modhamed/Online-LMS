@@ -42,6 +42,7 @@ public class AuthService implements IAuthService {
     private final ITokenService tokenService;
     private final RegistrationCompleteEventListener eventListener;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Override
     public Student signupStudent(StudentSignupDto studentSignupDto, HttpServletRequest request) {
@@ -144,6 +145,12 @@ public class AuthService implements IAuthService {
         tokenService.saveToken(tokenObj);
 
         return "Password reset successfully";
+    }
+
+    @Override
+    public void toggleBlockStatus(Long userId) {
+        User user = userService.getUserById(userId);
+        user.setIsBlocked(!user.getIsBlocked());
     }
 
 

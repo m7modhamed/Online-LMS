@@ -81,6 +81,13 @@ public class AuthController {
     }
 
 
+    @GetMapping("/users/{userId}/toggleBlock")
+    public ResponseEntity<String> toggleBlockStatus(@PathVariable Long userId) {
+
+        authService.toggleBlockStatus(userId);
+
+        return ResponseEntity.ok("User Blocked/Unblocked Successfully");
+    }
 
 
 
