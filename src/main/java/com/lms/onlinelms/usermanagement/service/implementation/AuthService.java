@@ -9,15 +9,18 @@ import com.lms.onlinelms.usermanagement.mapper.IInstructorMapper;
 import com.lms.onlinelms.usermanagement.mapper.IStudentMapper;
 import com.lms.onlinelms.usermanagement.model.*;
 import com.lms.onlinelms.usermanagement.repository.*;
+import com.lms.onlinelms.usermanagement.security.UserAuthenticationProvider;
 import com.lms.onlinelms.usermanagement.service.interfaces.IAuthService;
 import com.lms.onlinelms.usermanagement.service.interfaces.ITokenService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,7 @@ public class AuthService implements IAuthService {
     private final RegistrationCompleteEventListener eventListener;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+    private final UserAuthenticationProvider userAuthenticationProvider;
 
     @Override
     public Student signupStudent(StudentSignupDto studentSignupDto, HttpServletRequest request) {
@@ -52,13 +56,13 @@ public class AuthService implements IAuthService {
 
         Student student = studentMapper.toStudent(studentSignupDto);
         Optional<Role> studentRole = roleRepository.findByName("ROLE_STUDENT");
-        if(studentRole.isPresent()) {
+        if (studentRole.isPresent()) {
             student.setRole(studentRole.get());
-        }else{
-            throw new ResourceNotFoundException("the role not found",HttpStatus.NOT_FOUND);
+        } else {
+            throw new ResourceNotFoundException("the role not found", HttpStatus.NOT_FOUND);
         }
 
-        Student savedStudent=studentRepository.save(student);
+        Student savedStudent = studentRepository.save(student);
         publisher.publishEvent(new RegistrationCompleteEvent(savedStudent, request.getHeader("Origin")));
         return savedStudent;
     }
@@ -67,13 +71,13 @@ public class AuthService implements IAuthService {
     public Instructor signupInstructor(InstructorSignupDto instructorSignupDto, HttpServletRequest request) {
         throwExceptionIfUserExists(instructorSignupDto.getEmail());
 
-        Instructor instructor=instructorMapper.toInstructor(instructorSignupDto);
+        Instructor instructor = instructorMapper.toInstructor(instructorSignupDto);
 
         Optional<Role> instructorRole = roleRepository.findByName("ROLE_INSTRUCTOR");
-        if(instructorRole.isPresent()) {
+        if (instructorRole.isPresent()) {
             instructor.setRole(instructorRole.get());
-        }else {
-            throw new ResourceNotFoundException("the role not found",HttpStatus.NOT_FOUND);
+        } else {
+            throw new ResourceNotFoundException("the role not found", HttpStatus.NOT_FOUND);
         }
         Instructor savedInstructor = instructorRepository.save(instructor);
         publisher.publishEvent(new RegistrationCompleteEvent(savedInstructor, request.getHeader("Origin")));
@@ -94,9 +98,9 @@ public class AuthService implements IAuthService {
 
 
     private void throwExceptionIfUserExists(String email) {
-        Optional<User> user= userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
 
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             throw new AppException("the user already exist", HttpStatus.NOT_FOUND);
         }
     }
@@ -107,7 +111,7 @@ public class AuthService implements IAuthService {
 
         User user = tokenObj.getUser();
         if (user.getIsActive()) {
-            throw new AppException( "The user account is already active." ,HttpStatus.CONFLICT);
+            throw new AppException("The user account is already active.", HttpStatus.CONFLICT);
         }
 
         user.setIsActive(true);
@@ -133,8 +137,8 @@ public class AuthService implements IAuthService {
 
     @Override
     public String resetPassword(String token, String newPassword) {
-        Token tokenObj=tokenService.validateToken(token);
-        User account=tokenObj.getUser();
+        Token tokenObj = tokenService.validateToken(token);
+        User account = tokenObj.getUser();
         String encodedPassword = passwordEncoder.encode(newPassword);
 
 
@@ -153,6 +157,22 @@ public class AuthService implements IAuthService {
         user.setIsBlocked(!user.getIsBlocked());
     }
 
+    @Override
+    public User refreshToken(HttpServletRequest request) {
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (header == null || !header.startsWith("Bearer ")) {
+            throw new InsufficientAuthenticationException("invalid authorization header");
+        }
+
+        String[] authElements = header.split(" ");
+        if (authElements.length == 2 && "Bearer".equals(authElements[0])) {
+            String token = authElements[1];
+
+            return userAuthenticationProvider.validateRefreshTokenStrongly(token);
+        }
+        throw new InsufficientAuthenticationException("invalid authorization header");
+    }
 
     @Override
     public User findByEmail(String email) {

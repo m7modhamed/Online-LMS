@@ -19,4 +19,6 @@ public interface IAuthService {
     String resetPassword(String token, String password);
 
     void toggleBlockStatus(Long userId);
+
+    User refreshToken(HttpServletRequest request);
 }

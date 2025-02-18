@@ -1,9 +1,10 @@
 package com.lms.onlinelms.common.exceptions;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lms.onlinelms.coursemanagement.exception.CourseAccessException;
-import com.lms.onlinelms.coursemanagement.exception.IncompleteCourseException;
 import com.lms.onlinelms.usermanagement.dto.LoginResponseDto;
+import com.lms.onlinelms.usermanagement.exception.MismatchTokenType;
 import com.lms.onlinelms.usermanagement.service.interfaces.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.LockedException;
-import org.springframework.util.StreamUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +41,30 @@ public class RestExceptionHandler {
 
         LoginResponseDto loginResponseDto = new LoginResponseDto();
 
+        loginResponseDto.setStatus("error");
+        loginResponseDto.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponseDto);
+
+    }
+
+    @ExceptionHandler(value = { MismatchTokenType.class })
+    public ResponseEntity<LoginResponseDto> handleMismatchTokenType(MismatchTokenType ex) {
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+
+        loginResponseDto.setStatus("error");
+        loginResponseDto.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponseDto);
+
+    }
+
+
+    @ExceptionHandler(value = { TokenExpiredException.class })
+    public ResponseEntity<LoginResponseDto> handleTokenExpiredException(TokenExpiredException ex) {
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
         loginResponseDto.setStatus("error");
         loginResponseDto.setMessage(ex.getMessage());
 
