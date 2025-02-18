@@ -42,7 +42,7 @@ public class UserAuthenticationProvider {
 
     public String createAccessToken(User user) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 5000); // 15 min
+        Date validity = new Date(now.getTime() + 900000); // 15 min
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
