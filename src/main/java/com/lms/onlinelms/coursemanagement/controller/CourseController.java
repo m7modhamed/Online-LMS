@@ -3,7 +3,7 @@ package com.lms.onlinelms.coursemanagement.controller;
 import com.lms.onlinelms.common.exceptions.AppException;
 import com.lms.onlinelms.common.utility.UserUtil;
 import com.lms.onlinelms.coursemanagement.dto.*;
-import com.lms.onlinelms.coursemanagement.mapper.CourseMapper;
+import com.lms.onlinelms.coursemanagement.mapper.ICourseMapper;
 import com.lms.onlinelms.coursemanagement.model.Course;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICourseService;
 import com.lms.onlinelms.usermanagement.model.Instructor;
@@ -25,7 +25,7 @@ import java.util.List;
 public class CourseController {
 
     private final ICourseService courseService;
-    private final CourseMapper courseMapper;
+    private final ICourseMapper ICourseMapper;
 
     @PostMapping(value = "/courses" , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<CourseResponseDto> createCourse(
@@ -33,7 +33,7 @@ public class CourseController {
             @RequestPart("image") MultipartFile coverImage) {
 
         Course course = courseService.createCourse(courseRequestDto, coverImage);
-        CourseResponseDto courseResponseDto = courseMapper.toCourseResponseDto(course);
+        CourseResponseDto courseResponseDto = ICourseMapper.toCourseResponseDto(course);
         return ResponseEntity.ok().body(courseResponseDto);
     }
 
@@ -73,7 +73,7 @@ public class CourseController {
 
         Page<Course> coursePage = courseService.getPublishedCourses(searchCriteria, pageRequest);
 
-        Page<CourseInfoDto> responseAuctionPage = coursePage.map(courseMapper::toCourseInfoDto);
+        Page<CourseInfoDto> responseAuctionPage = coursePage.map(ICourseMapper::toCourseInfoDto);
 
         return ResponseEntity.ok(responseAuctionPage);
     }
@@ -99,7 +99,7 @@ public class CourseController {
 
         Page<Course> coursePage = courseService.getCoursesForAdmin(searchCriteria, pageRequest);
 
-        Page<AdminCourseInfoDto> adminCourseInfoDtos = coursePage.map(courseMapper::toAdminCourseInfoDto);
+        Page<AdminCourseInfoDto> adminCourseInfoDtos = coursePage.map(ICourseMapper::toAdminCourseInfoDto);
 
         return ResponseEntity.ok(adminCourseInfoDtos);
     }
@@ -145,7 +145,7 @@ public class CourseController {
 
         Page<Course> coursePage = courseService.getEnrolledCoursesForStudent(searchCriteria,studentId, pageRequest);
 
-        Page<CourseInfoDto> studentCourseInfoDtos = coursePage.map(courseMapper::toCourseInfoDto);
+        Page<CourseInfoDto> studentCourseInfoDtos = coursePage.map(ICourseMapper::toCourseInfoDto);
 
         return ResponseEntity.ok(studentCourseInfoDtos);
     }
@@ -156,7 +156,7 @@ public class CourseController {
             , @PathVariable Long studentId){
         Course course= courseService.getCourseForStudentById(courseId , studentId);
 
-        CourseResponseDto courseResponseDto=courseMapper.toCourseResponseDto(course);
+        CourseResponseDto courseResponseDto= ICourseMapper.toCourseResponseDto(course);
 
         if(courseResponseDto == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found");
@@ -186,7 +186,7 @@ public class CourseController {
 
         Page<Course> coursePage = courseService.getCoursesForInstructor(searchCriteria,instructorId, pageRequest);
 
-        Page<CourseInfoDto> instructorCourseInfoDtos = coursePage.map(courseMapper::toCourseInfoDto);
+        Page<CourseInfoDto> instructorCourseInfoDtos = coursePage.map(ICourseMapper::toCourseInfoDto);
 
         return ResponseEntity.ok(instructorCourseInfoDtos);
     }
@@ -204,7 +204,7 @@ public class CourseController {
         Course course= courseService.getInstructorCourse(instructor,courseId);
 
         CourseResponseDto courseResponseDto =
-                courseMapper.toCourseResponseDto(course);
+                ICourseMapper.toCourseResponseDto(course);
 
         return ResponseEntity.ok(courseResponseDto);
     }
@@ -214,7 +214,7 @@ public class CourseController {
 
         List<Course> courses= courseService.getCoursesForReviewing();
 
-        List<AdminCourseInfoDto> courseInfoDto = courseMapper.toAdminCourseInfoDto(courses);
+        List<AdminCourseInfoDto> courseInfoDto = ICourseMapper.toAdminCourseInfoDto(courses);
 
         return ResponseEntity.ok(courseInfoDto);
     }
@@ -225,7 +225,7 @@ public class CourseController {
 
         Course course= courseService.getCourseForAdmin(courseId);
 
-        CourseResponseDto courseResponseDto = courseMapper.toCourseResponseDto(course);
+        CourseResponseDto courseResponseDto = ICourseMapper.toCourseResponseDto(course);
 
         return ResponseEntity.ok(courseResponseDto);
     }

@@ -10,7 +10,7 @@ import com.lms.onlinelms.coursemanagement.enums.CourseStatus;
 import com.lms.onlinelms.coursemanagement.exception.CourseAccessException;
 import com.lms.onlinelms.coursemanagement.exception.IncompleteCourseException;
 import com.lms.onlinelms.coursemanagement.exception.UnsuitableCourseStatusException;
-import com.lms.onlinelms.coursemanagement.mapper.CourseMapper;
+import com.lms.onlinelms.coursemanagement.mapper.ICourseMapper;
 import com.lms.onlinelms.coursemanagement.model.*;
 import com.lms.onlinelms.coursemanagement.repository.CourseRepository;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ICategoryService;
@@ -39,7 +39,7 @@ import java.util.Objects;
 @Transactional
 public class CourseService implements ICourseService {
 
-    private final CourseMapper courseMapper;
+    private final ICourseMapper ICourseMapper;
     private final ICategoryService categoryService;
     private final CourseRepository courseRepository;
     private final IStudentService studentService;
@@ -52,7 +52,7 @@ public class CourseService implements ICourseService {
 
         Instructor instructor =(Instructor) UserUtil.getCurrentUser();
 
-        Course course=courseMapper.toCourse(courseRequestDto);
+        Course course= ICourseMapper.toCourse(courseRequestDto);
 
         //add course cover image
         String fileUrl = mediaService.saveFile(image , "/coverImages" );

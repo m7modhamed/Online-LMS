@@ -9,7 +9,7 @@ import org.mapstruct.MappingTarget;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface CourseMapper {
+public interface ICourseMapper {
 
 
     Course toCourse(CourseRequestDto courseRequestDto);

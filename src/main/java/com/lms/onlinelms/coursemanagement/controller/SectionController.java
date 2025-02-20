@@ -2,7 +2,7 @@ package com.lms.onlinelms.coursemanagement.controller;
 
 import com.lms.onlinelms.coursemanagement.dto.SectionRequestDto;
 import com.lms.onlinelms.coursemanagement.dto.SectionResponseDto;
-import com.lms.onlinelms.coursemanagement.mapper.SectionMapper;
+import com.lms.onlinelms.coursemanagement.mapper.ISectionMapper;
 import com.lms.onlinelms.coursemanagement.model.Section;
 import com.lms.onlinelms.coursemanagement.service.interfaces.ISectionService;
 import jakarta.validation.Valid;
@@ -17,18 +17,18 @@ import java.util.List;
 public class SectionController {
 
     private final ISectionService sectionService;
-    private final SectionMapper sectionMapper;
+    private final ISectionMapper ISectionMapper;
 
     @PostMapping("/courses/{course_id}/sections")
     public ResponseEntity<SectionResponseDto> createSection(
             @PathVariable("course_id") Long course_id
             , @RequestBody @Valid SectionRequestDto sectionRequestDto){
 
-        Section section = sectionMapper.toSection(sectionRequestDto);
+        Section section = ISectionMapper.toSection(sectionRequestDto);
 
         Section appendedSection = sectionService.appendSection(course_id,section);
 
-        SectionResponseDto sectionResponseDto = sectionMapper.toSectionResponseDto(appendedSection);
+        SectionResponseDto sectionResponseDto = ISectionMapper.toSectionResponseDto(appendedSection);
         return ResponseEntity.ok(sectionResponseDto);
     }
 
@@ -39,7 +39,7 @@ public class SectionController {
 
         List<Section> sections = sectionService.getCourseSections(course_id);
 
-        List<SectionResponseDto> sectionResponseDto = sectionMapper.toSectionResponseDto(sections);
+        List<SectionResponseDto> sectionResponseDto = ISectionMapper.toSectionResponseDto(sections);
         return ResponseEntity.ok(sectionResponseDto);
     }
 

@@ -6,7 +6,7 @@ import com.lms.onlinelms.coursemanagement.model.Lesson;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface LessonMapper {
+public interface ILessonMapper {
 
     Lesson toLesson(LessonRequestDto lessonRequestDto);
 

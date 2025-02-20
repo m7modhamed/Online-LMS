@@ -11,6 +11,9 @@ import com.lms.onlinelms.usermanagement.service.implementation.UserService;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -21,9 +24,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
+
 import java.util.Base64;
 import java.util.Date;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class UserAuthenticationProvider {
@@ -32,8 +37,9 @@ public class UserAuthenticationProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
 
-   // private final AuthService userService;
+    // private final AuthService userService;
     private final UserDetailsService userDetailsService;
+
     @PostConstruct
     protected void init() {
         // this is to avoid having the raw secret key available in the JVM
@@ -47,23 +53,23 @@ public class UserAuthenticationProvider {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
         String userImageUrl;
-        if(user.getProfileImage() != null){
-            userImageUrl=user.getProfileImage().getImageUrl();
-        }else{
-            userImageUrl=null;
+        if (user.getProfileImage() != null) {
+            userImageUrl = user.getProfileImage().getImageUrl();
+        } else {
+            userImageUrl = null;
         }
         return JWT.create()
                 .withSubject(user.getEmail())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
-                .withClaim("id" , user.getId())
-                .withClaim("tokenType" , "access_token")
+                .withClaim("id", user.getId())
+                .withClaim("tokenType", "access_token")
                 .withClaim("firstName", user.getFirstName())
                 .withClaim("lastName", user.getLastName())
-                .withClaim("role" , user.getRole().getName())
-                .withClaim("isActive" , user.getIsActive())
-                .withClaim("isBlocked" , user.getIsBlocked())
-                .withClaim("image" , userImageUrl)
+                .withClaim("role", user.getRole().getName())
+                .withClaim("isActive", user.getIsActive())
+                .withClaim("isBlocked", user.getIsBlocked())
+                .withClaim("image", userImageUrl)
                 .sign(algorithm);
     }
 
@@ -74,53 +80,51 @@ public class UserAuthenticationProvider {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
         String userImageUrl;
-        if(user.getProfileImage() != null){
-            userImageUrl=user.getProfileImage().getImageUrl();
-        }else{
-            userImageUrl=null;
+        if (user.getProfileImage() != null) {
+            userImageUrl = user.getProfileImage().getImageUrl();
+        } else {
+            userImageUrl = null;
         }
         return JWT.create()
                 .withSubject(user.getEmail())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
-                .withClaim("id" , user.getId())
-                .withClaim("tokenType" , "refresh_token")
+                .withClaim("id", user.getId())
+                .withClaim("tokenType", "refresh_token")
                 .withClaim("firstName", user.getFirstName())
                 .withClaim("lastName", user.getLastName())
-                .withClaim("role" , user.getRole().getName())
-                .withClaim("isActive" , user.getIsActive())
-                .withClaim("isBlocked" , user.getIsBlocked())
-                .withClaim("image" , userImageUrl)
+                .withClaim("role", user.getRole().getName())
+                .withClaim("isActive", user.getIsActive())
+                .withClaim("isBlocked", user.getIsBlocked())
+                .withClaim("image", userImageUrl)
                 .sign(algorithm);
     }
 
 
-
-
     public Authentication validateAccessTokenStrongly(String token, HttpServletRequest request) {
 
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
-            JWTVerifier verifier = JWT.require(algorithm).build();
-            DecodedJWT decoded = verifier.verify(token);
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decoded = verifier.verify(token);
 
-            // Populate WebAuthenticationDetails with request details
-            WebAuthenticationDetails authDetails = new WebAuthenticationDetails(request);
+        // Populate WebAuthenticationDetails with request details
+        WebAuthenticationDetails authDetails = new WebAuthenticationDetails(request);
 
-            // Retrieve user details
-            UserDetails user = userDetailsService.loadUserByUsername(decoded.getSubject());
+        // Retrieve user details
+        UserDetails user = userDetailsService.loadUserByUsername(decoded.getSubject());
 
-            if (!user.isEnabled()) {
-                throw new DisabledException("User is not active");
-            }
+        if (!user.isEnabled()) {
+            throw new DisabledException("User is not active");
+        }
 
-            // Create authentication token with user details and authorities
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        // Create authentication token with user details and authorities
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
-            // Set WebAuthenticationDetails in the authentication token
-            authentication.setDetails(authDetails);
+        // Set WebAuthenticationDetails in the authentication token
+        authentication.setDetails(authDetails);
 
-            return authentication;
+        return authentication;
 
 
     }
